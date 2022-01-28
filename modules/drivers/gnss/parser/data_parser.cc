@@ -33,6 +33,11 @@
 #include "modules/drivers/gnss/parser/parser.h"
 #include "modules/drivers/gnss/util/time_conversion.h"
 
+// Added 2021-07-06 17:00 juyebshin
+#include <iostream>
+using namespace std;
+// End added 2021-07-06 17:00 juyebshin
+
 namespace apollo {
 namespace drivers {
 namespace gnss {
@@ -125,7 +130,10 @@ void DataParser::ParseRawData(const std::string &msg) {
   MessagePtr msg_ptr;
 
   while (cyber::OK()) {
-    type = data_parser_->GetMessage(&msg_ptr);
+    type = data_parser_->GetMessage(&msg_ptr);    
+    // Added 2021-07-06 17:01 juyebshin
+    cout << "data type: " << (int)type << endl;
+    // End added 2021-07-06 17:01 juyebshin
     if (type == Parser::MessageType::NONE) {
       break;
     }

@@ -1,0 +1,38 @@
+cd ~/apollo/docker/scripts && sudo bash dev_start.sh && sudo bash dev_into.sh && source cyber/setup.bash
+
+cd ~/apollo/docker/scripts && sudo bash dev_into.sh
+source cyber/setup.bash
+
+
+bash /apollo/apollo.sh build
+bazel build cyber/examples/...
+
+./bazel-bin/cyber/examples/udp_writer
+
+./bazel-bin/cyber/examples/talker
+
+https://github.com/ApolloAuto/apollo.git
+
+
+
+cyber_recorder record -o kk_shuttle_2021_1112 -a
+
+## lidar
+cyber_launch start modules/drivers/lidar/hesai/launch/hesai64.launch
+cyber_recorder play -f 20210629164832.record.00000 20210629164832.record.00001 20210629164832.record.00002 --loop
+
+cyber_recorder play -f kk_shuttle_20211111.00000 kk_shuttle_20211111.00001 kk_shuttle_20211111.00002 kk_shuttle_20211111.00003 kk_shuttle_20211111.00004 kk_shuttle_20211111.00005 --loop
+
+
+
+## perception algorithm
+cyber_launch start /apollo/modules/transform/launch/static_stransform_hesai.launch
+cyber_launch start /apollo/modules/perception/production/launch/perception_lidar_custom.launch
+
+## udp sender
+./bazel-bin/cyber/examples/udp_writer
+
+## view/monitoring
+cyber_monitor
+bash scripts/bootstrap.sh
+http://localhost:8888

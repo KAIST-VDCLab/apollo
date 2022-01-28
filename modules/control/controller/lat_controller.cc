@@ -117,6 +117,7 @@ bool LatController::LoadControlConf(const ControlConf *control_conf) {
   steer_ratio_ = vehicle_param_.steer_ratio();
   steer_single_direction_max_degree_ =
       vehicle_param_.max_steer_angle() / M_PI * 180;
+  AINFO << "juyeb: steer_single_direction_max_degree_: " << steer_single_direction_max_degree_;
   max_lat_acc_ = control_conf->lat_controller_conf().max_lateral_acceleration();
   low_speed_bound_ = control_conf_->lon_controller_conf().switch_speed();
   low_speed_window_ =

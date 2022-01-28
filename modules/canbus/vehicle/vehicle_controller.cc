@@ -42,7 +42,7 @@ ErrorCode VehicleController::SetDrivingMode(
     return ErrorCode::CANBUS_ERROR;
   }
 
-  // vehicle in emergency mode only response to manual mode to reset.
+  // vehicle in emergency mode only response to manual mode to reset. // here
   if (this->driving_mode() == Chassis::EMERGENCY_MODE &&
       driving_mode != Chassis::COMPLETE_MANUAL) {
     AINFO

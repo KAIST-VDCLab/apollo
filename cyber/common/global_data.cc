@@ -28,6 +28,11 @@
 #include "cyber/common/environment.h"
 #include "cyber/common/file.h"
 
+// Added 2021-07-06 16:25 juyebshin
+#include <iostream>
+using namespace std;
+// End added 2021-07-06 16:25 juyebshin
+
 namespace apollo {
 namespace cyber {
 namespace common {
@@ -144,9 +149,15 @@ void GlobalData::InitHostInfo() {
     }
     std::string tmp_ip(addr);
     std::string starts = tmp_ip.substr(0, 3);
-    if (starts != "127") {
+    // Modified 2021-07-06 16:25 juyebshin
+    if (starts == "192") {
+    // End modified 2021-07-06 16:25 juyebshin
+    // if (starts != "127") {
       host_ip_ = tmp_ip;
       break;
+      // Added 2021-07-06 16:25 juyebshin
+      cout << "tmp_ip: " << tmp_ip << endl;
+      // End added 2021-07-06 16:25 juyebshin
     }
   }
   freeifaddrs(ifaddr);

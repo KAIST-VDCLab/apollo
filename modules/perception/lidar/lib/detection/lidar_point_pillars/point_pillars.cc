@@ -35,7 +35,7 @@
 #include <iostream>
 
 #include "cyber/common/log.h"
-
+#include "modules/perception/lidar/common/lidar_timer.h"
 namespace apollo {
 namespace perception {
 namespace lidar {
@@ -613,8 +613,17 @@ void PointPillars::DoInference(const float* in_points_array,
     AERROR << "Torch is not using GPU!";
     return;
   }
+  Timer timer;
+  double preprocess_time = 0.0;
+  double pfe_time = 0.0;
+  double scattered_time = 0.0;
+  double backbone_time = 0.0;
+  double fpn_time = 0.0;
+  double bbox_head_time = 0.0;
+  double post_process_time = 0.0;
 
   Preprocess(in_points_array, in_num_points);
+  preprocess_time = timer.toc(true);
 
   anchor_mask_cuda_ptr_->DoAnchorMaskCuda(
       dev_sparse_pillar_map_, dev_cumsum_along_x_, dev_cumsum_along_y_,
@@ -655,17 +664,19 @@ void PointPillars::DoInference(const float* in_points_array,
           .forward({tensor_pillar_point_feature, tensor_num_points_per_pillar,
                     tensor_pillar_coors})
           .toTensor();
-
+  pfe_time = timer.toc(true);
   auto scattered_feature =
       scattered_net_
           .forward({pfe_output, tensor_pillar_coors, scattered_batch_size})
           .toTensor();
-
+  scattered_time = timer.toc(true);
   auto backbone_feature = backbone_net_.forward({scattered_feature});
-
+  backbone_time = timer.toc(true);
   auto fpn_feature = fpn_net_.forward({backbone_feature});
-
+  fpn_time = timer.toc(true);
   auto bbox_head_output = bbox_head_net_.forward({fpn_feature}).toTuple();
+  bbox_head_time = timer.toc(true);
+
 
   auto cls_score = bbox_head_output->elements()[0].toTensor();
   auto bbox_pred = bbox_head_output->elements()[1].toTensor();
@@ -681,6 +692,17 @@ void PointPillars::DoInference(const float* in_points_array,
       dev_filtered_box_, dev_filtered_score_, dev_filtered_label_,
       dev_filtered_dir_, dev_box_for_nms_, dev_filter_count_, out_detections,
       out_labels);
+  post_process_time = timer.toc(true);
+
+  AINFO << "PointPillars: "
+        << "\n"
+        << "preprocess: " << preprocess_time << "\t"
+        << "pfe " << pfe_time << "\t"
+        << "scattered: " << scattered_time << "\t"
+        << "backbone: " << backbone_time << "\t"
+        << "fpn: " << fpn_time << "\t"
+        << "bbox: " << bbox_head_time << "\t"
+        << "post_process: " << post_process_time;
 
   // release the stream and the buffers
   cudaStreamDestroy(stream);

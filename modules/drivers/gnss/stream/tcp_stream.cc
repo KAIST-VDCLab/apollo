@@ -30,6 +30,11 @@
 #include "modules/drivers/gnss/stream/stream.h"
 #include "modules/drivers/gnss/stream/tcp_stream.h"
 
+// Added 2021-07-06 16:38 juyebshin
+#include <iostream>
+using namespace std;
+// End added 2021-07-06 16:38 juyebshin
+
 namespace apollo {
 namespace drivers {
 namespace gnss {
@@ -37,6 +42,9 @@ namespace gnss {
 TcpStream::TcpStream(const char* address, uint16_t port, uint32_t timeout_usec,
                      bool auto_reconnect)
     : sockfd_(-1), errno_(0), auto_reconnect_(auto_reconnect) {
+  // Added 2021-07-06 16:39 juyebshin
+  cout << "tcp address: " << std::string(address) << endl;
+  // End added 2021-07-06 16:39 juyebshin
   peer_addr_ = inet_addr(address);
   peer_port_ = htons(port);
   timeout_usec_ = timeout_usec;

@@ -110,6 +110,7 @@ if __name__ == '__main__':
         print("Usage: %s old_control_conf.pb.txt result.csv" % sys.argv[0])
         sys.exit(0)
 
+    print('hello')
     ctl_conf_pb = proto_utils.get_pb_from_text_file(sys.argv[1], ControlConf())
     speed_table_dict = load_calibration_raw_data(sys.argv[2])
     calibration_table_pb = get_calibration_table_pb(speed_table_dict)

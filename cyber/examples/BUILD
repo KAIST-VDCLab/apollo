@@ -62,4 +62,21 @@ cc_binary(
     ],
 )
 
+
+cc_binary(
+    name = "udp_writer",
+    srcs = [
+        "udp_writer.cc",
+        "DetectionData.h",
+        "ChatterData.h",
+        "microbuf.h",
+        ],
+    deps = [
+        "//cyber",
+        "//cyber/examples/proto:examples_cc_proto",
+        "//modules/perception/proto:perception_obstacle_cc_proto",
+        "@boost",
+    ],
+)
+
 cpplint()

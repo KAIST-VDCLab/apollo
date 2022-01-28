@@ -37,19 +37,19 @@ namespace wey {
 
 WeyMessageManager::WeyMessageManager() {
   // Control Messages
-  AddSendProtocolData<Ads1111, true>();
-  AddSendProtocolData<Ads338e, true>();
-  AddSendProtocolData<Adseps113, true>();
-  AddSendProtocolData<Adsreqvin390, true>();
-  AddSendProtocolData<Adsshifter115, true>();
+  AddSendProtocolData<Ads1111, true>(); // acceleration
+  AddSendProtocolData<Ads338e, true>(); // beam, horn, turning signal
+  AddSendProtocolData<Adseps113, true>(); // steering
+  AddSendProtocolData<Adsreqvin390, true>(); // ?
+  AddSendProtocolData<Adsshifter115, true>(); // gear
 
   // Report Messages
-  AddRecvProtocolData<Fail241, true>();
-  AddRecvProtocolData<Fbs1243, true>();
-  AddRecvProtocolData<Fbs2240, true>();
-  AddRecvProtocolData<Fbs3237, true>();
-  AddRecvProtocolData<Fbs4235, true>();
-  AddRecvProtocolData<Status310, true>();
+  AddRecvProtocolData<Fail241, true>(); // fail safe hj
+  AddRecvProtocolData<Fbs1243, true>(); // wheel dir type & spd. vehicle spd jy
+  AddRecvProtocolData<Fbs2240, true>(); // wheel dir type & spd. vehicle spd jy
+  AddRecvProtocolData<Fbs3237, true>(); // engine RPM, acc pedal pos, gear pos, steering whl torque not required
+  AddRecvProtocolData<Fbs4235, true>(); // steering whl angle hj
+  AddRecvProtocolData<Status310, true>(); // whl speed valid, steering whl pos, parking brake, beam, turning signal hj
   AddRecvProtocolData<Vinresp1391, true>();
   AddRecvProtocolData<Vinresp2392, true>();
   AddRecvProtocolData<Vinresp3393, true>();

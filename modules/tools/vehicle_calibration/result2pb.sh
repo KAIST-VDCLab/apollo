@@ -17,7 +17,8 @@
 ###############################################################################
 
 TOP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd  -P)"
-${TOP_DIR}/bazel-bin/modules/tools/vehicle_calibration/result2pb ${TOP_DIR}/modules/control/conf/control_conf.pb.txt $1
+echo "TOP_DIR: $TOP_DIR" #${TOP_DIR}
+${TOP_DIR}/bazel-bin/modules/tools/vehicle_calibration/result2pb ${TOP_DIR}/modules/control/conf/temp/control_conf.pb.txt $1
 
 echo "Created control conf file: control_conf_pb.txt"
 echo "with updated calibration table"

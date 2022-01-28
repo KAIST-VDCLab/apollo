@@ -17,6 +17,10 @@
 #include "modules/localization/rtk/rtk_localization_component.h"
 #include "cyber/time/clock.h"
 
+// Added 2021-07-12 11:20
+#include <iostream>
+using namespace std;
+
 namespace apollo {
 namespace localization {
 
@@ -45,6 +49,9 @@ bool RTKLocalizationComponent::InitConfig() {
     return false;
   }
   AINFO << "Rtk localization config: " << rtk_config.DebugString();
+
+  // Added 2021-07-12 11:20
+  cout << "Rtk localization config file path: " << config_file_path_ << endl;
 
   localization_topic_ = rtk_config.localization_topic();
   localization_status_topic_ = rtk_config.localization_status_topic();

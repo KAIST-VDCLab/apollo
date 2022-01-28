@@ -144,25 +144,34 @@ class DataCollector(object):
         if not self.canmsg_received:
             print('No CAN Message Yet')
             return
+        # print('cmd[0]: ' + str(self.cmd[0]) + ' cmd[1]: ' + str(self.cmd[1]) + ' cmd[2]: ' + str(self.cmd[2]))
+        print('########')
+        print('target: '+str(self.cmd[1])+', current: '+str(self.vehicle_speed))
+        print('imu acceleration: '+str(self.acceleration))
+        print('')
 
         self.controlcmd.header.sequence_num = self.sequence_num
         self.sequence_num += 1
 
-        if self.case == 'a':
+        if self.case == 'a': # acceleration
             if self.cmd[0] > 0:
                 self.controlcmd.throttle = self.cmd[0]
+                self.controlcmd.acceleration = self.cmd[0] # added for IONIQ
                 self.controlcmd.brake = 0
             else:
                 self.controlcmd.throttle = 0
+                self.controlcmd.acceleration = self.cmd[0] # added for IONIQ
                 self.controlcmd.brake = -self.cmd[0]
             if self.vehicle_speed >= self.cmd[1]:
                 self.case = 'd'
-        elif self.case == 'd':
+        elif self.case == 'd': # decceleration
             if self.cmd[2] > 0:
                 self.controlcmd.throttle = self.cmd[0]
+                self.controlcmd.acceleration = self.cmd[2] # added for IONIQ
                 self.controlcmd.brake = 0
             else:
                 self.controlcmd.throttle = 0
+                self.controlcmd.acceleration = self.cmd[2] # added for IONIQ
                 self.controlcmd.brake = -self.cmd[2]
             if self.vehicle_speed == 0:
                 self.in_session = False
@@ -226,8 +235,9 @@ def main():
                 if os.path.exists(data_collector.outfile):
                     os.remove(data_collector.outfile)
                 else:
-                    print('File does not exist: %s' % date_collector.outfile)
+                    print('File does not exist: %s' % data_collector.outfile)
         elif len(cmd) == 3:
+            print('running command.')
             data_collector.run(cmd)
 
 
