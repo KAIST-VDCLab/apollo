@@ -23,6 +23,9 @@
 #include "modules/perception/lidar/common/lidar_log.h"
 #include "modules/perception/onboard/common_flags/common_flags.h"
 
+#include <iostream>
+using namespace std;
+
 using ::apollo::cyber::Clock;
 
 namespace apollo {
@@ -120,6 +123,7 @@ bool DetectionComponent::InternalProc(
   Eigen::Affine3d pose = Eigen::Affine3d::Identity();
   const double lidar_query_tf_timestamp =
       timestamp - lidar_query_tf_offset_ * 0.001;
+  cout << "timestamp: " << timestamp << ", lidar_query_tf_offset_: " << lidar_query_tf_offset_ << endl;
   if (!lidar2world_trans_.GetSensor2worldTrans(lidar_query_tf_timestamp,
                                                &pose)) {
     out_message->error_code_ = apollo::common::ErrorCode::PERCEPTION_ERROR_TF;

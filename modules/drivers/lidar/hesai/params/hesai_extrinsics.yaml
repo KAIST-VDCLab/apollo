@@ -15,6 +15,6 @@ transform:
   rotation:
     x: 0
     y: 0
-    z: 1
-    w: 0.001
+    z: -0.7071068 #0
+    w: 0.7071068 #0.001
 child_frame_id: novatel

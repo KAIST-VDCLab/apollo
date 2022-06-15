@@ -21,6 +21,9 @@
 #include "modules/common/util/string_util.h"
 #include "modules/perception/common/sensor_manager/sensor_manager.h"
 
+#include <iostream>
+using namespace std;
+
 namespace apollo {
 namespace perception {
 namespace onboard {

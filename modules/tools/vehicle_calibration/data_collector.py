@@ -122,6 +122,7 @@ class DataCollector(object):
         """
         New CANBUS
         """
+        # print('========================== CAN callback =========================')
         if not self.localization_received:
             print('No Localization Message Yet')
             return

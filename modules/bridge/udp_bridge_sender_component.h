@@ -25,9 +25,6 @@
 #include <string>
 #include <vector>
 
-#include "modules/bridge/proto/udp_bridge_remote_info.pb.h"
-#include "modules/planning/proto/planning.pb.h"
-
 #include "cyber/class_loader/class_loader.h"
 #include "cyber/component/component.h"
 #include "cyber/cyber.h"
@@ -35,8 +32,11 @@
 #include "cyber/io/session.h"
 #include "cyber/scheduler/scheduler_factory.h"
 #include "modules/bridge/common/bridge_gflags.h"
+#include "modules/bridge/proto/udp_bridge_remote_info.pb.h"
 #include "modules/common/monitor_log/monitor_log_buffer.h"
 #include "modules/common/util/util.h"
+#include "modules/planning/proto/planning.pb.h"
+#include "modules/control/proto/control_cmd.pb.h"
 
 namespace apollo {
 namespace bridge {
@@ -65,6 +65,7 @@ class UDPBridgeSenderComponent final : public cyber::Component<T> {
 
 BRIDGE_COMPONENT_REGISTER(planning::ADCTrajectory)
 BRIDGE_COMPONENT_REGISTER(localization::LocalizationEstimate)
+BRIDGE_COMPONENT_REGISTER(control::ControlCommand)
 
 }  // namespace bridge
 }  // namespace apollo

@@ -15,7 +15,6 @@
  *****************************************************************************/
 
 #include "modules/bridge/udp_bridge_sender_component.h"
-
 #include "modules/bridge/common/bridge_proto_serialized_buf.h"
 #include "modules/bridge/common/macro.h"
 #include "modules/bridge/common/util.h"
@@ -28,6 +27,7 @@ namespace bridge {
 using apollo::bridge::UDPBridgeSenderRemoteInfo;
 using apollo::cyber::io::Session;
 using apollo::localization::LocalizationEstimate;
+using apollo::control::ControlCommand;
 
 template <typename T>
 bool UDPBridgeSenderComponent<T>::Init() {
@@ -87,6 +87,7 @@ bool UDPBridgeSenderComponent<T>::Proc(const std::shared_ptr<T> &pb_msg) {
 
 BRIDGE_IMPL(LocalizationEstimate);
 BRIDGE_IMPL(planning::ADCTrajectory);
+BRIDGE_IMPL(control::ControlCommand);
 
 }  // namespace bridge
 }  // namespace apollo

@@ -1,0 +1,163 @@
+module_config {
+    module_library : "/apollo/bazel-bin/modules/drivers/camera/libcamera_component.so"
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_front_5mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_front_5mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_front_5mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_front_5mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/front_5mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_front_12mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_front_12mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_front_12mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_front_12mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/front_12mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_stereo_5mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_stereo_5mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_stereo_5mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_stereo_5mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/stereo_5mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_frontleft_5mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_frontleft_5mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_frontleft_5mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_frontleft_5mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/frontleft_5mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_frontright_5mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_frontright_5mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_frontright_5mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_frontright_5mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/frontright_5mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_rear_5mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_rear_5mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_rear_5mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_rear_5mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/rear_5mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_rearleft_5mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_rearleft_5mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_rearleft_5mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_rearleft_5mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/rearleft_5mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+
+    components {
+      class_name : "CameraComponent"
+      config {
+        name : "camera_rearright_5mm"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_rearright_5mm.pb.txt"
+      }
+    }
+
+    components {
+      class_name : "CompressComponent"
+      config {
+        name : "camera_rearright_5mm_compress"
+        config_file_path : "/apollo/modules/drivers/camera/conf/camera_rearright_5mm.pb.txt"
+        readers {
+          channel: "/apollo/sensor/camera/rearright_5mm/image"
+          pending_queue_size: 10
+        }
+      }
+    }
+}

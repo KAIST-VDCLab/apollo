@@ -36,6 +36,7 @@
 
 #include <cmath>
 #include <string>
+#include <iostream>
 
 #ifndef __aarch64__
 #include "adv_trigger.h"
@@ -356,14 +357,17 @@ bool UsbCam::init_device(void) {
     }
   }
 
-  CLEAR(fmt);
+  CLEAR(fmt); // struct v4l2_format fmt
 
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   fmt.fmt.pix.width = config_->width();
   fmt.fmt.pix.height = config_->height();
-  fmt.fmt.pix.pixelformat = pixel_format_;
+  fmt.fmt.pix.pixelformat = pixel_format_; // pixel_format_ == V4L2_PIX_FMT_YUYV
   fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
 
+  std::cout << "trying VIDIOC_S_FMT" << std::endl;
+  std::cout << "width: " << config_->width() << ", height: " << config_->height() << std::endl;
+  std::cout << "pix format: " << pixel_format_ << std::endl;
   if (-1 == xioctl(fd_, VIDIOC_S_FMT, &fmt)) {
     AERROR << "VIDIOC_S_FMT";
     return false;
@@ -451,6 +455,7 @@ int UsbCam::xioctl(int fd, int request, void* arg) {
   int r = 0;
   do {
     r = ioctl(fd, request, arg);
+    std::cout << "xioctl >> request: " << request << ", r: " << r << std::endl;
   } while (-1 == r && EINTR == errno);
 
   return r;

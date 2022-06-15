@@ -1,21 +1,21 @@
-#carid:mkz058
+#carid:wey
 #set primary if single-antenna;set both primary and secondary if dual-antenna.
 leverarm:
   primary:
     offset:
-      x: -0.5016
-      y: 0.5334
-      z: 0.8763
+      x: -0.32
+      y: 0.15
+      z: 0.60
     uncertainty:
       x: 0.05
       y: 0.05
       z: 0.05
-  secondary:
-    offset:
-      x: 0.5461
-      y: 0.5334
-      z: 0.8763
-    uncertainty:
-      x: 0.05
-      y: 0.05
-      z: 0.05
+  #secondary:
+  #  offset:
+  #    x: 0.5461
+  #    y: 0.5334
+  #    z: 0.8763
+  #  uncertainty:
+  #    x: 0.05
+  #    y: 0.05
+  #    z: 0.05
