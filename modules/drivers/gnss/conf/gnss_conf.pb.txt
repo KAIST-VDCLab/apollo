@@ -66,15 +66,17 @@ gpsbin_folder: "/apollo/data/gpsbin"
 #########################################################################
 # notice: only for debug, won't configure device through driver online!!!
 #########################################################################
+login_commands: "SETINSTRANSLATION USER -0.32 0 -0.6 0.05 0.05 0.05\r\n"
+login_commands: "SETINSTRANSLATION ANT1 -0.32 0.15 0.45 0.05 0.05 0.05\r\n"
 login_commands: "UNLOGALL THISPORT\r\n"
 # login_commands: "LOG COM2 GPRMC ONTIME 1.0 0.25\r\n"
 # login_commands: "EVENTOUTCONTROL MARK2 ENABLE POSITIVE 999999990 10\r\n"
 # login_commands: "EVENTOUTCONTROL MARK1 ENABLE POSITIVE 500000000 500000000\r\n"
 # login_commands: "LOG GPGGA ONTIME 1.0\r\n"
 
-login_commands: "log bestgnssposb ontime 1\r\n"
-login_commands: "log bestgnssvelb ontime 1\r\n"
-login_commands: "log bestposb ontime 1\r\n"
+login_commands: "log bestgnssposb ontime 0.05\r\n"
+login_commands: "log bestgnssvelb ontime 0.05\r\n"
+login_commands: "log bestposb ontime 0.05\r\n"
 login_commands: "log INSPVAXB ontime 0.5\r\n"
 login_commands: "log INSPVASB ontime 0.01\r\n"
 login_commands: "log CORRIMUDATASB ontime 0.01\r\n"
