@@ -144,7 +144,7 @@ void GlobalData::InitHostInfo() {
     }
     std::string tmp_ip(addr);
     std::string starts = tmp_ip.substr(0, 3);
-    if (starts != "127") {
+    if (starts != "192") {
       host_ip_ = tmp_ip;
       break;
     }

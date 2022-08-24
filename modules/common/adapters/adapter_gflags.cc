@@ -49,6 +49,12 @@ DEFINE_string(control_core_command_topic, "/apollo/control/controlcore",
 DEFINE_string(pointcloud_topic,
               "/apollo/sensor/lidar128/compensator/PointCloud2",
               "pointcloud topic name");
+DEFINE_string(pointcloud_hesai_40p_topic,
+              "/apollo/sensor/hesai40/compensator/PointCloud2",
+              "pointcloud topic name for hesai40p lidar");
+DEFINE_string(pointcloud_hesai_64_topic,
+              "/apollo/sensor/hesai64/compensator/PointCloud2",
+              "pointcloud topic name for hesai64 lidar"); 
 DEFINE_string(pointcloud_16_topic,
               "/apollo/sensor/lidar16/compensator/PointCloud2",
               "16 beam Lidar pointcloud topic name");
@@ -214,7 +220,8 @@ DEFINE_string(v2x_obu_traffic_light_topic,
               "v2x obu traffic_light topic name");
 DEFINE_string(v2x_internal_obstacle_topic, "/apollo/v2x/obu/internal/obstacles",
               "v2x internal obstacles topic name");
-DEFINE_string(v2x_obstacle_topic, "/apollo/v2x/obstacles",
+// DEFINE_string(v2x_obstacle_topic, "/apollo/v2x/obstacles",
+DEFINE_string(v2x_obstacle_topic, "/",
               "v2x obstacles topic name");
 DEFINE_string(v2x_traffic_light_topic, "/apollo/v2x/traffic_light",
               "v2x traffic light topic name");

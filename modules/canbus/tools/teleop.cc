@@ -41,7 +41,7 @@ DEFINE_double(steer_inc_delta, 2.0, "steer delta percentage");
 // TODO(ALL) : switch the acceleration cmd or pedal cmd
 // default : use pedal cmd
 DEFINE_bool(
-    use_acceleration, false,
+    use_acceleration, true,
     "switch to use acceleration instead of throttle pedal and brake pedal");
 
 namespace {

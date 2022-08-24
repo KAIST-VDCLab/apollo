@@ -1,4 +1,4 @@
-ip: "192.168.20.13"
+ip: "192.168.31.12"
 lidar_recv_port: 2368
 gps_recv_port: 10110
 start_angle: 0

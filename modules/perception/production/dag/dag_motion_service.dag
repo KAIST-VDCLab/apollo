@@ -5,7 +5,8 @@ module_config {
     config {
     name : "camera_motionService"
     config_file_path : "/apollo/modules/perception/production/conf/perception/camera/motion_service.config"
-    flag_file_path: "/apollo/modules/perception/production/conf/perception/perception_common.flag"
+    # flag_file_path: "/apollo/modules/perception/production/conf/perception/perception_common.flag"
+    flag_file_path: "/apollo/modules/perception/production/conf/perception/perception_tucson.flag"
     }
   }
 }

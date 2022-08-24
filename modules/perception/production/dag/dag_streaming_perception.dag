@@ -1,19 +1,23 @@
 module_config {
   module_library : "/apollo/bazel-bin/modules/perception/onboard/component/libperception_component_lidar.so"
 
- components {
+  components {
     class_name : "DetectionComponent"
     config {
-      name: "Velodyne128Detection"
-      config_file_path: "/apollo/modules/perception/production/conf/perception/lidar/velodyne128_detection_conf.pb.txt"
-      flag_file_path: "/apollo/modules/perception/production/conf/perception/perception_common.flag"
+      # name: "Velodyne128Detection"
+      # config_file_path: "/apollo/modules/perception/production/conf/perception/lidar/velodyne128_detection_conf.pb.txt"
+      # flag_file_path: "/apollo/modules/perception/production/conf/perception/perception_common.flag"
+      name: "Hesai64Detection"
+      config_file_path: "/apollo/modules/perception/production/conf/perception/lidar/hesai64_detection_conf.pb.txt"
+      flag_file_path: "/apollo/modules/perception/production/conf/perception/perception_tucson.flag"
       readers {
-          channel: "/apollo/sensor/lidar128/compensator/PointCloud2"
-        }
+          # channel: "/apollo/sensor/lidar128/compensator/PointCloud2"
+          channel: "/apollo/sensor/hesai64/compensator/PointCloud2"
+      }
     }
   }
 
- components {
+  components {
     class_name : "DetectionComponent"
     config {
       name: "Velodyne16Detection"
@@ -22,7 +26,7 @@ module_config {
           channel: "/apollo/sensor/lidar16/compensator/PointCloud2"
         }
     }
- }
+  }
 
   components {
     class_name : "RecognitionComponent"

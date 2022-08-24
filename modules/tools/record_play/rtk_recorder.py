@@ -142,13 +142,29 @@ class RtkRecord(object):
 
         if self.startmoving:
             self.cars += carspeed * 0.01
-            self.write(
-                "%s, %s, %s, %s, %s, %s, %s, %.4f, %s, %s, %s, %s, %s, %s\n" %
-                (carx, cary, carz, carspeed, caracceleration, self.carcurvature,
-                 carcurvature_change_rate, cartime, cartheta, cargear,
-                 self.cars, self.chassis.throttle_percentage,
-                 self.chassis.brake_percentage,
-                 self.chassis.steering_percentage))
+            # self.write(
+            #     "%s, %s, %s, %s, %s, %s, %s, %.4f, %s, %s, %s, %s, %s, %s\n" %
+            #     (carx, cary, carz, carspeed, caracceleration, self.carcurvature,
+            #      carcurvature_change_rate, cartime, cartheta, cargear,
+            #      self.cars, self.chassis.throttle_percentage,
+            #      self.chassis.brake_percentage,
+            #      self.chassis.steering_percentage))
+            if caracceleration <= 0:
+                self.write(
+                    "%s, %s, %s, %s, %s, %s, %s, %.4f, %s, %s, %s, %s, %s, %s\n" %
+                    (carx, cary, carz, carspeed, caracceleration, self.carcurvature,
+                    carcurvature_change_rate, cartime, cartheta, cargear,
+                    self.cars, 0,
+                    abs(caracceleration),
+                    self.chassis.steering_percentage))
+            else:
+                self.write(
+                    "%s, %s, %s, %s, %s, %s, %s, %.4f, %s, %s, %s, %s, %s, %s\n" %
+                    (carx, cary, carz, carspeed, caracceleration, self.carcurvature,
+                    carcurvature_change_rate, cartime, cartheta, cargear,
+                    self.cars, abs(caracceleration),
+                    0,
+                    self.chassis.steering_percentage))
             self.logger.debug(
                 "started moving and write data at time %s" % cartime)
         else:

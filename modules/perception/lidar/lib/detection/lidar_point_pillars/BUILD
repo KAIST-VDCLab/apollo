@@ -30,6 +30,7 @@ cc_library(
         "//third_party:libtorch",
         "@local_config_cuda//cuda:cudart",
         "@local_config_tensorrt//:tensorrt",
+        "//modules/perception/lidar/common",
     ],
     alwayslink = True,
 )
