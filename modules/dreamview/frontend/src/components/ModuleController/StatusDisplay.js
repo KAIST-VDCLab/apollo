@@ -1,5 +1,6 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
+import UTTERANCE from 'store/utterance';
 
 const StatusColorMapping = {
   OK: '#1C9063',
@@ -28,6 +29,8 @@ export default class StatusDisplay extends React.Component {
   render() {
     const { title, status } = this.props;
     const status_code = status.status;
+
+    status_code === 'OK' ? null : UTTERANCE.speakOnce(`Error detected from ${this.props.title}`);
 
     return (
             <div className="status-display">

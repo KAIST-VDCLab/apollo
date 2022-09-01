@@ -22,3 +22,7 @@
 --map_dir=/apollo/modules/map/data/Jeju_Airport
 
 --map_dir=/apollo/modules/map/data/sunnyvale_loop
+
+--map_dir=/apollo/modules/map/data/k_city
+
+--map_dir=/apollo/modules/map/data/munji

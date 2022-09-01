@@ -28,6 +28,7 @@ namespace bridge {
 using apollo::bridge::UDPBridgeSenderRemoteInfo;
 using apollo::cyber::io::Session;
 using apollo::localization::LocalizationEstimate;
+using apollo::control::ControlCommand;
 
 template <typename T>
 bool UDPBridgeSenderComponent<T>::Init() {
@@ -87,6 +88,8 @@ bool UDPBridgeSenderComponent<T>::Proc(const std::shared_ptr<T> &pb_msg) {
 
 BRIDGE_IMPL(LocalizationEstimate);
 BRIDGE_IMPL(planning::ADCTrajectory);
+BRIDGE_IMPL(control::ControlCommand);
+BRIDGE_IMPL(canbus::Chassis);
 
 }  // namespace bridge
 }  // namespace apollo

@@ -27,6 +27,8 @@
 
 #include "modules/bridge/proto/udp_bridge_remote_info.pb.h"
 #include "modules/planning/proto/planning.pb.h"
+#include "modules/control/proto/control_cmd.pb.h"
+#include "modules/canbus/proto/chassis.pb.h"
 
 #include "cyber/class_loader/class_loader.h"
 #include "cyber/component/component.h"
@@ -65,6 +67,8 @@ class UDPBridgeSenderComponent final : public cyber::Component<T> {
 
 BRIDGE_COMPONENT_REGISTER(planning::ADCTrajectory)
 BRIDGE_COMPONENT_REGISTER(localization::LocalizationEstimate)
+BRIDGE_COMPONENT_REGISTER(control::ControlCommand)
+BRIDGE_COMPONENT_REGISTER(canbus::Chassis)
 
 }  // namespace bridge
 }  // namespace apollo

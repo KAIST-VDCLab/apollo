@@ -71,9 +71,10 @@ bool DetectionComponent::Proc(
 }
 
 bool DetectionComponent::InitAlgorithmPlugin() {
+  AINFO << "sensor_name_: " << sensor_name_;
   ACHECK(common::SensorManager::Instance()->GetSensorInfo(sensor_name_,
                                                           &sensor_info_));
-
+  
   detector_.reset(new lidar::LidarObstacleDetection);
   if (detector_ == nullptr) {
     AERROR << "sensor_name_ "

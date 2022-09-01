@@ -2222,6 +2222,13 @@
                 "vehicleId": {
                   "type": "apollo.common.VehicleID",
                   "id": 33
+                },
+                "batterySocPercentage": {
+                  "type": "int32",
+                  "id": 34,
+                  "options": {
+                    "default": -1
+                  }
                 }
               },
               "nested": {

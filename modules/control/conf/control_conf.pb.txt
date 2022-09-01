@@ -6,7 +6,7 @@ use_preview_speed_for_table: false
 enable_input_timestamp_check: false
 max_localization_miss_num: 20
 max_planning_miss_num: 20
-max_acceleration_when_stopped: 0.01
+max_acceleration_when_stopped: 0.5
 steer_angle_rate: 100.0
 enable_gain_scheduler: true
 set_steer_limit: true
@@ -40,9 +40,9 @@ lat_controller_conf {
   reverse_matrix_q: 0.4
   reverse_matrix_q: 0.0
   cutoff_freq: 10
-  mean_filter_window_size: 10
+  mean_filter_window_size: 30
   max_iteration: 150
-  max_lateral_acceleration: 5.0
+  max_lateral_acceleration: 2.0
   lat_err_gain_scheduler {
     scheduler {
       speed: 4.0
@@ -97,25 +97,25 @@ lat_controller_conf {
 }
 lon_controller_conf {
   ts: 0.01
-  brake_minimum_action: 0.0
+  brake_minimum_action: 10.0
   throttle_minimum_action: 0.0
-  speed_controller_input_limit: 2.0
+  speed_controller_input_limit: 1.0
   station_error_limit: 2.0
-  preview_window: 20.0
+  preview_window: 150.0
   standstill_acceleration: -3.0
   station_pid_conf {
     integrator_enable: false
     integrator_saturation_level: 0.3
-    kp: 0.2
-    ki: 0.0
-    kd: 0.0
+    kp: 0.3
+    ki: 0.1
+    kd: 0.05
   }
   low_speed_pid_conf {
     integrator_enable: true
     integrator_saturation_level: 0.3
     kp: 0.5
     ki: 0.3
-    kd: 0.0
+    kd: 0.1
   }
   high_speed_pid_conf {
     integrator_enable: true

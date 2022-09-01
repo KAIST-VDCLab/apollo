@@ -217,5 +217,14 @@ bool UDPBridgeReceiverComponent<T>::RemoveInvalidBuf(uint32_t msg_id) {
 }
 
 BRIDGE_RECV_IMPL(canbus::Chassis);
+BRIDGE_RECV_IMPL(drivers::gnss::GnssBestPose);
+BRIDGE_RECV_IMPL(drivers::gnss::Imu);
+BRIDGE_RECV_IMPL(drivers::gnss::InsStat);
+BRIDGE_RECV_IMPL(localization::CorrectedImu);
+BRIDGE_RECV_IMPL(localization::Gps);
+BRIDGE_RECV_IMPL(drivers::ContiRadar);
+BRIDGE_RECV_IMPL(drivers::CompressedImage);
+BRIDGE_RECV_IMPL(perception::TrafficLightDetection);
+BRIDGE_RECV_IMPL(perception::PerceptionObstacle);
 }  // namespace bridge
 }  // namespace apollo
