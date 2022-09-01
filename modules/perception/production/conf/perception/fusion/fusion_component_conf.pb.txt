@@ -1,7 +1,7 @@
 fusion_method: "ProbabilisticFusion"
 fusion_main_sensor: "velodyne128"
 # fusion_main_sensor: "hesai64"
-object_in_roi_check: true
+object_in_roi_check: false
 radius_for_roi_object_check: 120
 output_obstacles_channel_name: "/perception/vehicle/obstacles"
 output_viz_fused_content_channel_name: "/perception/inner/visualization/FusedObjects"
