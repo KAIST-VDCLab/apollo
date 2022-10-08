@@ -6,7 +6,7 @@ use_preview_speed_for_table: false
 enable_input_timestamp_check: false
 max_localization_miss_num: 20
 max_planning_miss_num: 20
-max_acceleration_when_stopped: 0.5
+max_acceleration_when_stopped: 1.0
 steer_angle_rate: 100.0
 enable_gain_scheduler: true
 set_steer_limit: true
@@ -16,7 +16,7 @@ control_period: 0.01
 max_planning_interval_sec: 0.2
 max_planning_delay_threshold: 4.0
 action: STOP
-soft_estop_brake: 50.0
+soft_estop_brake: 55.0
 active_controllers: LAT_CONTROLLER
 active_controllers: LON_CONTROLLER
 max_steering_percentage_allowed: 100

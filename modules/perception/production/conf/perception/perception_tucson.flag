@@ -101,12 +101,12 @@
 # enable ground removal
 # type: bool
 # default: true
---enable_ground_removal=true
+--enable_ground_removal=false
 
 # remove point cloud that under this height
 # type: double
 # default: -1.5
---ground_removal_height=-1.6
+--ground_removal_height=-2.1
 
 # enable down-sampling point cloud by beams. Set false to use full cloud for
 # more accurate detection, but some obstacles in front of ego vehicle might

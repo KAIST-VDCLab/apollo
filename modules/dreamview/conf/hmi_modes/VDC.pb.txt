@@ -1,9 +1,3 @@
-#cyber_modules {
-#  key: "Canbus"
-#  value: {
-#    dag_files: "/apollo/modules/canbus/dag/canbus.dag"
-#  }
-#}
 cyber_modules {
   key: "Bridge Sender"
   value: {
@@ -17,21 +11,15 @@ cyber_modules {
   }
 }
 cyber_modules {
+  key: "Traffic Light"
+  value: {
+    dag_files: "/apollo/modules/bridge/dag/bridge_receiver_traffic_light.dag"
+  }
+}
+cyber_modules {
   key: "Control"
   value: {
     dag_files: "/apollo/modules/control/dag/control.dag"
-  }
-}
-cyber_modules {
-  key: "Control_lonlat"
-  value: {
-    dag_files: "/apollo/modules/control/dag/lateral_longitudinal_module.dag"
-  }
-}
-cyber_modules {
-  key: "Control_mpc"
-  value: {
-    dag_files: "/apollo/modules/control/dag/mpc_module.dag"
   }
 }
 cyber_modules {
@@ -111,7 +99,7 @@ modules {
   }
 }
 modules {
-  key: "Data Recorder"
+  key: "Cyber Recorder"
   value: {
     start_command: "/apollo/scripts/record_bag.py --start"
     stop_command: "/apollo/scripts/record_bag.py --stop --stop_signal SIGINT"
@@ -121,48 +109,34 @@ modules {
   }
 }
 monitored_components {
-  key: "GNSS"
+  key: "CAN-FD"
   value: {
-    process {
-      command_keywords: "mainboard"
-      command_keywords: "/apollo/modules/drivers/gnss/dag/gnss.dag"
+    channel {
+      name: "/apollo/control"
     }
-    # We also have a special GPSMonitor to check message status.
+  }
+}
+monitored_components {
+  key: "Panda64"
+  value: {
+    channel {
+      name: "/apollo/perception/obstacles"
+    }
   }
 }
 monitored_components {
   key: "Localization"
   value: {
-    # Special LocalizationMonitor.
+    channel {
+      name: "/apollo/sensor/gnss/ins_stat"
+    }
   }
 }
 monitored_components {
-  key: "Lidar 64"
+  key: "Camera"
   value: {
     channel {
-      name: "/apollo/sensor/hesai64/compensator/PointCloud2"
-    }
-  }
-}
-monitored_components {
-  key: "Data Recorder"
-  value: {
-    process {
-      command_keywords: "cyber_recorder record"
-    }
-    resource {
-      disk_spaces {
-        # For logs.
-        path: "/apollo/data"
-        insufficient_space_warning: 8
-        insufficient_space_error: 2
-      }
-      disk_spaces {
-        # For records.
-        path: "/media/apollo/internal_nvme"
-        insufficient_space_warning: 128
-        insufficient_space_error: 32
-      }
+      name: "/apollo/perception/traffic_light"
     }
   }
 }
