@@ -251,3 +251,6 @@ DEFINE_string(latency_recording_topic, "/apollo/common/latency_records",
               "Latency recording topic.");
 DEFINE_string(latency_reporting_topic, "/apollo/common/latency_reports",
               "Latency reporting topic.");
+DEFINE_string(lidar_model_version, "",
+              "It determins which lidar model(16 ,64 or 128) to load, "
+              "if not to set, the model will be loaded by the sensor name.");

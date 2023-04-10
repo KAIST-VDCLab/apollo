@@ -226,7 +226,7 @@ DEFINE_double(nonstatic_obstacle_nudge_l_buffer, 0.4,
               "minimum l-distance to nudge a non-static obstacle (meters)");
 DEFINE_double(lane_change_obstacle_nudge_l_buffer, 0.3,
               "minimum l-distance to nudge when changing lane (meters)");
-DEFINE_double(lateral_ignore_buffer, 3.0,
+DEFINE_double(lateral_ignore_buffer, 7.0,
               "If an obstacle's lateral distance is further away than this "
               "distance, ignore it");
 DEFINE_double(max_stop_distance_obstacle, 10.0,
@@ -235,7 +235,7 @@ DEFINE_double(min_stop_distance_obstacle, 6.0,
               "min stop distance from in-lane obstacle (meters)");
 DEFINE_double(follow_min_distance, 3.0,
               "min follow distance for vehicles/bicycles/moving objects");
-DEFINE_double(follow_min_obs_lateral_distance, 2.5,
+DEFINE_double(follow_min_obs_lateral_distance, 5.0,
               "obstacle min lateral distance to follow");
 DEFINE_double(yield_distance, 5.0,
               "min yield distance for vehicles/moving objects "

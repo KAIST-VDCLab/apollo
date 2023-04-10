@@ -45,6 +45,11 @@
 # default: false
 --obs_save_fusion_supplement=true
 
+# Enable saving result images for visualization
+# type: bool
+# default: false
+--start_visualizer=false
+
 ###########################################################################
 # Flags from transform_wrapper
 
@@ -84,7 +89,6 @@
 --obs_max_local_pose_extrapolation_latency=0.15
 
 --config_manager_path=./
---start_visualizer=false
 
 ###########################################################################
 # Flags from lidar_point_pillars
@@ -102,9 +106,11 @@
 # remove point cloud that under this height
 # type: double
 # default: -1.5
---ground_removal_height=-1.6
+--ground_removal_height=-1.5
 
-# enable down-sample point cloud by beams
+# enable down-sampling point cloud by beams. Set false to use full cloud for
+# more accurate detection, but some obstacles in front of ego vehicle might
+# not be detected if you use 128c Lidar.
 # type: bool
 # default: false
 --enable_downsample_beams=false
@@ -114,7 +120,7 @@
 # default: 4
 --downsample_beams_factor=4
 
-# enable down-sample point cloud by voxelization
+# enable down-sampling point cloud by voxelization
 # type: bool
 # default: false
 --enable_downsample_pointcloud=false

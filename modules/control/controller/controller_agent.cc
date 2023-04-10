@@ -37,16 +37,22 @@ void ControllerAgent::RegisterControllers(const ControlConf *control_conf) {
   for (auto active_controller : control_conf->active_controllers()) {
     switch (active_controller) {
       case ControlConf::MPC_CONTROLLER:
+      for(int i=0; i<20;i++)
+        std::cout << "MPC Controller" << std::endl;
         controller_factory_.Register(
             ControlConf::MPC_CONTROLLER,
             []() -> Controller * { return new MPCController(); });
         break;
       case ControlConf::LAT_CONTROLLER:
+      for(int i=0; i<20;i++)
+        std::cout << "LAT Controller" << std::endl;
         controller_factory_.Register(
             ControlConf::LAT_CONTROLLER,
             []() -> Controller * { return new LatController(); });
         break;
       case ControlConf::LON_CONTROLLER:
+      for(int i=0; i<20;i++)
+        std::cout << "LON Controller" << std::endl;
         controller_factory_.Register(
             ControlConf::LON_CONTROLLER,
             []() -> Controller * { return new LonController(); });

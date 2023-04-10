@@ -1,13 +1,20 @@
 extrinsic_file {
-    frame_id: "hesai64"
-    child_frame_id: "novatel"
+    frame_id: "novatel"
+    child_frame_id: "hesai64"
     file_path: "/apollo/modules/drivers/lidar/hesai/params/hesai_extrinsics.yaml"
     enable: true
 }
 
 extrinsic_file {
-    frame_id: "novatel"
-    child_frame_id: "world"
-    file_path: "/apollo/modules/drivers/lidar/hesai/params/novatel_to_world_extrinsics.yaml"
+    frame_id: "hesai64"
+    child_frame_id: "camera_front_5mm"
+    file_path: "/apollo/modules/perception/data/params/camera_front_5mm_extrinsics.yaml"
+    enable: true
+}
+
+extrinsic_file {
+    frame_id: "camera_front_5mm"
+    child_frame_id: "camera_front_12mm"
+    file_path: "/apollo/modules/perception/data/params/camera_front_12mm_extrinsics.yaml"
     enable: true
 }

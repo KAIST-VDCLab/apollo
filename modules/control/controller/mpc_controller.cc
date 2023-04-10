@@ -456,7 +456,7 @@ Status MPCController::ComputeControlCommand(
   steer_angle = common::math::Clamp(steer_angle, -100.0, 100.0);
   cmd->set_steering_target(steer_angle);
 
-  debug->set_acceleration_cmd_closeloop(acc_feedback);
+  //debug->set_acceleration_cmd_closeloop(acc_feedback);
 
   double acceleration_cmd = acc_feedback + debug->acceleration_reference();
   // TODO(QiL): add pitch angle feed forward to accommodate for 3D control
@@ -488,21 +488,21 @@ Status MPCController::ComputeControlCommand(
 
   debug->set_calibration_value(calibration_value);
 
-  double throttle_cmd = 0.0;
-  double brake_cmd = 0.0;
-  if (calibration_value >= 0) {
-    throttle_cmd = std::max(calibration_value, throttle_lowerbound_);
-    brake_cmd = 0.0;
-  } else {
-    throttle_cmd = 0.0;
-    brake_cmd = std::max(-calibration_value, brake_lowerbound_);
-  }
+  // double throttle_cmd = 0.0;
+  // double brake_cmd = 0.0;
+  // if (calibration_value >= 0) {
+  //   throttle_cmd = std::max(calibration_value, throttle_lowerbound_);
+  //   brake_cmd = 0.0;
+  // } else {
+  //   throttle_cmd = 0.0;
+  //   brake_cmd = std::max(-calibration_value, brake_lowerbound_);
+  // }
 
   cmd->set_steering_rate(FLAGS_steer_angle_rate);
   // if the car is driven by acceleration, disgard the cmd->throttle and brake
-  cmd->set_throttle(throttle_cmd);
-  cmd->set_brake(brake_cmd);
-  cmd->set_acceleration(acceleration_cmd);
+  // cmd->set_throttle(throttle_cmd);
+  // cmd->set_brake(brake_cmd);
+  // cmd->set_acceleration(acceleration_cmd);
 
   debug->set_heading(vehicle_state->heading());
   debug->set_steering_position(chassis->steering_percentage());
@@ -690,35 +690,35 @@ void MPCController::ComputeLongitudinalErrors(
   ADEBUG << "matched point:" << matched_point.DebugString();
   ADEBUG << "reference point:" << reference_point.DebugString();
 
-  const double linear_v = injector_->vehicle_state()->linear_velocity();
-  const double linear_a = injector_->vehicle_state()->linear_acceleration();
-  double heading_error = common::math::NormalizeAngle(
-      injector_->vehicle_state()->heading() - matched_point.theta());
-  double lon_speed = linear_v * std::cos(heading_error);
-  double lon_acceleration = linear_a * std::cos(heading_error);
-  double one_minus_kappa_lat_error = 1 - reference_point.path_point().kappa() *
-                                             linear_v * std::sin(heading_error);
+  //const double linear_v = injector_->vehicle_state()->linear_velocity();
+  //const double linear_a = injector_->vehicle_state()->linear_acceleration();
+  //double heading_error = common::math::NormalizeAngle(
+  //    injector_->vehicle_state()->heading() - matched_point.theta());
+  //double lon_speed = linear_v * std::cos(heading_error);
+  //double lon_acceleration = linear_a * std::cos(heading_error);
+  //double one_minus_kappa_lat_error = 1 - reference_point.path_point().kappa() *
+  //                                           linear_v * std::sin(heading_error);
 
-  debug->set_station_reference(reference_point.path_point().s());
-  debug->set_station_feedback(s_matched);
-  debug->set_station_error(reference_point.path_point().s() - s_matched);
-  debug->set_speed_reference(reference_point.v());
-  debug->set_speed_feedback(lon_speed);
-  debug->set_speed_error(reference_point.v() - s_dot_matched);
-  debug->set_acceleration_reference(reference_point.a());
-  debug->set_acceleration_feedback(lon_acceleration);
-  debug->set_acceleration_error(reference_point.a() -
-                                lon_acceleration / one_minus_kappa_lat_error);
-  double jerk_reference =
-      (debug->acceleration_reference() - previous_acceleration_reference_) /
-      ts_;
-  double lon_jerk =
-      (debug->acceleration_feedback() - previous_acceleration_) / ts_;
-  debug->set_jerk_reference(jerk_reference);
-  debug->set_jerk_feedback(lon_jerk);
-  debug->set_jerk_error(jerk_reference - lon_jerk / one_minus_kappa_lat_error);
-  previous_acceleration_reference_ = debug->acceleration_reference();
-  previous_acceleration_ = debug->acceleration_feedback();
+  // debug->set_station_reference(reference_point.path_point().s());
+  // debug->set_station_feedback(s_matched);
+  // debug->set_station_error(reference_point.path_point().s() - s_matched);
+  // debug->set_speed_reference(reference_point.v());
+  // debug->set_speed_feedback(lon_speed);
+  // debug->set_speed_error(reference_point.v() - s_dot_matched);
+  // debug->set_acceleration_reference(reference_point.a());
+  // debug->set_acceleration_feedback(lon_acceleration);
+  // debug->set_acceleration_error(reference_point.a() -
+  //                               lon_acceleration / one_minus_kappa_lat_error);
+  // double jerk_reference =
+  //     (debug->acceleration_reference() - previous_acceleration_reference_) /
+  //     ts_;
+  // double lon_jerk =
+  //     (debug->acceleration_feedback() - previous_acceleration_) / ts_;
+  // debug->set_jerk_reference(jerk_reference);
+  // debug->set_jerk_feedback(lon_jerk);
+  // debug->set_jerk_error(jerk_reference - lon_jerk / one_minus_kappa_lat_error);
+  // previous_acceleration_reference_ = debug->acceleration_reference();
+  // previous_acceleration_ = debug->acceleration_feedback();
 }
 
 }  // namespace control

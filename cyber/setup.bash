@@ -7,6 +7,7 @@ export CYBER_PATH="${APOLLO_ROOT_DIR}/cyber"
 
 bazel_bin_path="${APOLLO_ROOT_DIR}/bazel-bin"
 cyber_bin_path="${bazel_bin_path}/cyber"
+mainboard_path="${bazel_bin_path}/cyber/mainboard"
 cyber_tool_path="${bazel_bin_path}/cyber/tools"
 recorder_path="${cyber_tool_path}/cyber_recorder"
 launch_path="${cyber_tool_path}/cyber_launch"
@@ -18,15 +19,23 @@ visualizer_path="${bazel_bin_path}/modules/tools/visualizer"
 rosbag_to_record_path="${bazel_bin_path}/modules/data/tools/rosbag_to_record"
 
 # TODO(all): place all these in one place and add_to_path
-for entry in "${cyber_bin_path}" \
+for entry in "${mainboard_path}" \
     "${recorder_path}" "${monitor_path}"  \
     "${channel_path}" "${node_path}" \
     "${service_path}" \
     "${launch_path}" \
-    "${visualizer_path}" \
-    "${rosbag_to_record_path}" ; do
+    "${visualizer_path}" ; do
     add_to_path "${entry}"
 done
+#for entry in "${cyber_bin_path}" \
+#    "${recorder_path}" "${monitor_path}"  \
+#    "${channel_path}" "${node_path}" \
+#    "${service_path}" \
+#    "${launch_path}" \
+#    "${visualizer_path}" \
+#    "${rosbag_to_record_path}" ; do
+#    add_to_path "${entry}"
+#done
 
 # ${CYBER_PATH}/python
 export PYTHONPATH=${bazel_bin_path}/cyber/python/internal:${PYTHONPATH}

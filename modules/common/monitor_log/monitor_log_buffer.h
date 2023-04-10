@@ -87,6 +87,10 @@ class MonitorLogBuffer {
    */
   REG_MSG_TYPE(FATAL);
 
+  REG_MSG_TYPE(SCHOOL);
+
+  //REG_MSG_TYPE(SCHOOL);
+
   /**
    * @brief Add monitor message with MonitorMessageItem::LogLevel
    * @param log_level defined in modules/common/monitor/proto/monitor.proto

@@ -16,6 +16,8 @@
 
 #include "modules/perception/inference/libtorch/torch_det.h"
 
+#include <c10/cuda/CUDACachingAllocator.h>
+
 #include "cyber/common/log.h"
 
 namespace apollo {
@@ -39,6 +41,7 @@ bool TorchDet::Init(const std::map<std::string, std::vector<int>> &shapes) {
   // Init net
   torch::Device device(device_type_, device_id_);
   net_ = torch::jit::load(model_file_, device);
+  net_.eval();
 
   for (const auto& name : output_names_) {
     auto blob = std::make_shared<Blob<float>>(2, 6, 1, 1);
@@ -79,7 +82,7 @@ void TorchDet::Infer() {
   auto input_param = blobs_[input_names_[1]];
 
   torch::Tensor tensor_image = torch::from_blob(
-                              blob->data()->mutable_cpu_data(),
+                              blob->data()->mutable_gpu_data(),
                               {blob->shape(0), blob->shape(1), blob->shape(2),
                               blob->shape(3)}, torch::kFloat32);
   torch::Tensor tensor_param = torch::from_blob(
@@ -112,6 +115,7 @@ void TorchDet::Infer() {
     result = torch::zeros({1, 9}, torch::kFloat).to(device);
   }
   blobs_[output_names_[0]]->data()->set_gpu_data(result.data_ptr());
+  c10::cuda::CUDACachingAllocator::emptyCache();
 }
 
 }  // namespace inference

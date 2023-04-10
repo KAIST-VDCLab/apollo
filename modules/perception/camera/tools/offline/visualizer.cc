@@ -111,8 +111,8 @@ bool Visualizer::Init(const std::vector<std::string> &camera_names,
 bool Visualizer::Init_all_info_single_camera(
     const std::vector<std::string> &camera_names,
     const std::string &visual_camera,
-    const std::map<std::string, Eigen::Matrix3f> &intrinsic_map,
-    const std::map<std::string, Eigen::Matrix4d> &extrinsic_map,
+    const EigenMap<std::string, Eigen::Matrix3f> &intrinsic_map,
+    const EigenMap<std::string, Eigen::Matrix4d> &extrinsic_map,
     const Eigen::Matrix4d &ex_lidar2imu, const double pitch_adj_degree,
     const double yaw_adj_degree, const double roll_adj_degree,
     const int image_height, const int image_width) {
@@ -149,17 +149,17 @@ bool Visualizer::Init_all_info_single_camera(
 
     // 1. transform camera->lidar
     ex_camera2lidar_[camera_name] = extrinsic_map_.at(camera_name);
-    AINFO << "ex_camera2lidar_ = " << extrinsic_map_.at(camera_name);
+    AINFO << "ex_camera2lidar_ =\n" << extrinsic_map_.at(camera_name);
 
-    AINFO << "ex_lidar2imu_ =" << ex_lidar2imu_;
+    AINFO << "ex_lidar2imu_ =\n" << ex_lidar2imu_;
 
     // 2. transform camera->lidar->imu
     ex_camera2imu_ = ex_lidar2imu_ * ex_camera2lidar_[camera_name];
-    AINFO << "ex_camera2imu_ =" << ex_camera2imu_;
+    AINFO << "ex_camera2imu_ =\n" << ex_camera2imu_;
 
     // intrinsic camera parameter
     K_[camera_name] = intrinsic_map_.at(camera_name).cast<double>();
-    AINFO << "intrinsic K_ =" << K_[camera_name];
+    AINFO << "intrinsic K_ =\n" << K_[camera_name];
     // homography_ground2image_.setIdentity();
     // homography_image2ground_.setIdentity();
 
@@ -173,15 +173,15 @@ bool Visualizer::Init_all_info_single_camera(
     // 3. transform camera->lidar->imu->car
     ex_camera2car_ = ex_imu2car_ * ex_camera2imu_;
 
-    AINFO << "ex_camera2car_ =" << ex_camera2car_;
+    AINFO << "ex_camera2car_ =\n" << ex_camera2car_;
 
     // Adjust angle
     adjust_angles(camera_name, pitch_adj_degree, yaw_adj_degree,
                   roll_adj_degree);
 
-    AINFO << "homography_image2ground_ ="
+    AINFO << "homography_image2ground_ =\n"
           << homography_image2ground_[camera_name];
-    AINFO << "homography_ground2image_ ="
+    AINFO << "homography_ground2image_ =\n"
           << homography_ground2image_[camera_name];
 
     // compute FOV points
@@ -259,7 +259,7 @@ bool Visualizer::adjust_angles(const std::string &camera_name,
       cos(roll_adj_radian), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
 
   adjusted_camera2car_ = ex_camera2car_ * Rz * Ry * Rx;
-  AWARN << "adjusted_camera2car_: " << adjusted_camera2car_;
+  AWARN << "adjusted_camera2car_: \n" << adjusted_camera2car_;
 
   // Get homography from projection matrix
   // ====
@@ -1369,7 +1369,9 @@ void Visualizer::ShowResult_all_info_single_camera(
   if (frame.timestamp - last_timestamp_ < 0.02) return;
 
   world_image_ = cv::Mat(world_h_, wide_pixel_, CV_8UC3, black_color);
-
+  if (frame.data_provider->sensor_name() == "front_6mm") {
+    cv::imwrite("./test.png", img);
+  }
   // draw results on visulization panel
   int line_pos = 0;
   cv::Mat image = img.clone();
@@ -1459,12 +1461,12 @@ void Visualizer::ShowResult_all_info_single_camera(
             bigimg(cv::Rect(0, small_h_, small_w_, small_h_)));
         world_image_.copyTo(
             bigimg(cv::Rect(small_w_, 0, wide_pixel_, world_h_)));
-        cv::namedWindow("Apollo Visualizer", CV_WINDOW_NORMAL);
-        cv::setWindowProperty("Apollo Visualizer", CV_WND_PROP_FULLSCREEN,
-                              CV_WINDOW_FULLSCREEN);
-        cv::imshow("Apollo Visualizer", bigimg);
-        int key = cvWaitKey(30);
-        key_handler(camera_name, key);
+        // cv::namedWindow("Apollo Visualizer", CV_WINDOW_NORMAL);
+        // cv::setWindowProperty("Apollo Visualizer", CV_WND_PROP_FULLSCREEN,
+        //                       CV_WINDOW_FULLSCREEN);
+        // cv::imshow("Apollo Visualizer", bigimg);
+        // int key = cvWaitKey(30);
+        // key_handler(camera_name, key);
 
         // output visualization panel
         if (write_out_img_) {

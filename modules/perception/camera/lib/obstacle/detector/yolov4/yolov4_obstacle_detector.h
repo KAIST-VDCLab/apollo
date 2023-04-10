@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2018 The Apollo Authors. All Rights Reserved.
+ * Copyright 2020 The Apollo Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the License);
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@
 #include <string>
 #include <vector>
 
+#include "modules/perception/camera/proto/yolo.pb.h"
+
 #include "cyber/common/file.h"
 #include "modules/perception/base/box.h"
 #include "modules/perception/base/object_types.h"
 #include "modules/perception/camera/common/util.h"
 #include "modules/perception/camera/lib/interface/base_feature_extractor.h"
 #include "modules/perception/camera/lib/interface/base_obstacle_detector.h"
-#include "modules/perception/camera/lib/obstacle/detector/yolov4/proto/yolov4.pb.h"
 #include "modules/perception/camera/lib/obstacle/detector/yolov4/region_output.h"
 #include "modules/perception/inference/inference.h"
 #include "modules/perception/inference/utils/resize.h"

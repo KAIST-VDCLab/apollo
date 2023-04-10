@@ -118,6 +118,8 @@ function determine_build_targets() {
       build_targets="//cyber/... union //modules/tools/visualizer/..."
     elif [[ -d "${APOLLO_ROOT_DIR}/modules/${component}" ]]; then
       build_targets="//modules/${component}/..."
+    elif [[ -d "${APOLLO_ROOT_DIR}/${component}" ]]; then
+      build_targets="//${component}/..."
     else
       error "Directory <APOLLO_ROOT_DIR>/modules/${component} not found. Exiting ..."
       exit 1

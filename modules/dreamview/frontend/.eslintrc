@@ -21,6 +21,7 @@
     "curly": "error",
     // specify whether double or single quotes should be used
     "quotes": ["error", "single", { "avoidEscape": true }],
+    "quotes": [2, "single", { "avoidEscape": true }],
 
     // Require the use of `===` and `!==`.
     "eqeqeq": "error",

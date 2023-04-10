@@ -144,7 +144,7 @@ bool SensorManager::IsHdLidar(const std::string& name) const {
 
 bool SensorManager::IsHdLidar(const SensorType& type) const {
   return type == SensorType::VELODYNE_128 || type == SensorType::VELODYNE_64 ||
-         type == SensorType::VELODYNE_32 || type == SensorType::VELODYNE_16;
+         type == SensorType::VELODYNE_32 || type == SensorType::VELODYNE_16 || type == SensorType::HESAI_64;
 }
 
 bool SensorManager::IsLdLidar(const std::string& name) const {

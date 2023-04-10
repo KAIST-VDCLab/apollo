@@ -39,6 +39,7 @@ enum class SensorType {
   STEREO_CAMERA = 8,
   ULTRASONIC = 9,
   VELODYNE_128 = 10,
+  HESAI_64 = 11,
   SENSOR_TYPE_NUM
 };
 

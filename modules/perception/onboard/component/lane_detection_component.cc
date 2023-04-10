@@ -44,6 +44,7 @@ namespace perception {
 namespace onboard {
 using apollo::cyber::common::GetAbsolutePath;
 using apollo::localization::LocalizationEstimate;
+using ::apollo::cyber::Clock;
 
 FunInfoType LaneDetectionComponent::init_func_arry_[] = {
     {&LaneDetectionComponent::InitSensorInfo, "InitSensorInfo"},
@@ -72,12 +73,13 @@ static int GetGpuId(const camera::CameraPerceptionInitOptions &options) {
 
 static bool SetCameraHeight(const std::string &sensor_name,
                             const std::string &params_dir,
+                            const std::string &lidar_sensor_name,
                             float default_camera_height, float *camera_height) {
   float base_h = default_camera_height;
   float camera_offset = 0.0f;
   try {
     YAML::Node lidar_height =
-        YAML::LoadFile(params_dir + "/" + "velodyne128_height.yaml");
+        YAML::LoadFile(params_dir + "/" + lidar_sensor_name + "_height.yaml");
     base_h = lidar_height["vehicle"]["parameters"]["height"].as<float>();
     AINFO << base_h;
     YAML::Node camera_ex =
@@ -157,8 +159,8 @@ static bool LoadExtrinsics(const std::string &yaml_file,
 // @description: get project matrix
 static bool GetProjectMatrix(
     const std::vector<std::string> &camera_names,
-    const std::map<std::string, Eigen::Matrix4d> &extrinsic_map,
-    const std::map<std::string, Eigen::Matrix3f> &intrinsic_map,
+    const EigenMap<std::string, Eigen::Matrix4d> &extrinsic_map,
+    const EigenMap<std::string, Eigen::Matrix3f> &intrinsic_map,
     Eigen::Matrix3d *project_matrix, double *pitch_diff = nullptr) {
   if (camera_names.size() != 2) {
     AINFO << "camera number must be 2!";
@@ -207,9 +209,10 @@ bool LaneDetectionComponent::Init() {
   // load in lidar to imu extrinsic
   Eigen::Matrix4d ex_lidar2imu;
   LoadExtrinsics(FLAGS_obs_sensor_intrinsic_path + "/" +
-                     "velodyne128_novatel_extrinsics.yaml",
+                     FLAGS_lidar_sensor_name + "_novatel_extrinsics.yaml",
                  &ex_lidar2imu);
-  AINFO << "velodyne128_novatel_extrinsics: " << ex_lidar2imu;
+  AINFO << FLAGS_lidar_sensor_name + "_novatel_extrinsics.yaml: \n"
+        << ex_lidar2imu;
 
   ACHECK(visualize_.Init_all_info_single_camera(
       camera_names_, visual_camera_, intrinsic_map_, extrinsic_map_,
@@ -288,7 +291,7 @@ void LaneDetectionComponent::OnReceiveImage(
 
   // for e2e lantency statistics
   {
-    const double cur_time = apollo::common::time::Clock::NowInSeconds();
+    const double cur_time = Clock::NowInSeconds();
     const double start_latency = (cur_time - message->measurement_time()) * 1e3;
     AINFO << "FRAME_STATISTICS:Camera:Start:msg_time[" << camera_name << "-"
           << FORMAT_TIMESTAMP(message->measurement_time()) << "]:cur_time["
@@ -312,7 +315,7 @@ void LaneDetectionComponent::OnReceiveImage(
 
   // for e2e lantency statistics
   {
-    const double end_timestamp = apollo::common::time::Clock::NowInSeconds();
+    const double end_timestamp = Clock::NowInSeconds();
     const double end_latency =
         (end_timestamp - message->measurement_time()) * 1e3;
     AINFO << "FRAME_STATISTICS:Camera:End:msg_time[" << camera_name << "-"
@@ -497,7 +500,7 @@ int LaneDetectionComponent::InitCameraFrames() {
     auto pinhole = static_cast<base::PinholeCameraModel *>(model.get());
     Eigen::Matrix3f intrinsic = pinhole->get_intrinsic_params();
     intrinsic_map_[camera_name] = intrinsic;
-    AINFO << "#intrinsics of " << camera_name << ": "
+    AINFO << "#intrinsics of " << camera_name << ": \n"
           << intrinsic_map_[camera_name];
     Eigen::Matrix4d extrinsic;
     LoadExtrinsics(FLAGS_obs_sensor_intrinsic_path + "/" + camera_name +
@@ -510,7 +513,8 @@ int LaneDetectionComponent::InitCameraFrames() {
   for (const auto &camera_name : camera_names_) {
     float height = 0.0f;
     SetCameraHeight(camera_name, FLAGS_obs_sensor_intrinsic_path,
-                    default_camera_height_, &height);
+                    FLAGS_lidar_sensor_name, default_camera_height_,
+                    &height);
     camera_height_map_[camera_name] = height;
   }
 
@@ -527,7 +531,7 @@ int LaneDetectionComponent::InitProjectMatrix() {
     AERROR << "GetProjectMatrix failed";
     return cyber::FAIL;
   }
-  AINFO << "project_matrix_: " << project_matrix_;
+  AINFO << "project_matrix_: \n" << project_matrix_;
   AINFO << "pitch_diff_:" << pitch_diff_;
   name_camera_pitch_angle_diff_map_[camera_names_[0]] = 0.f;
   name_camera_pitch_angle_diff_map_[camera_names_[1]] =

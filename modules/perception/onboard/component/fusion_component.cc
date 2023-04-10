@@ -36,6 +36,7 @@ bool FusionComponent::Init() {
   AINFO << "Fusion Component Configs: " << comp_config.DebugString();
 
   // to load component configs
+  fusion_name_ = comp_config.fusion_name();
   fusion_method_ = comp_config.fusion_method();
   fusion_main_sensor_ = comp_config.fusion_main_sensor();
   object_in_roi_check_ = comp_config.object_in_roi_check();
@@ -79,7 +80,10 @@ bool FusionComponent::Proc(const std::shared_ptr<SensorFrameMessage>& message) {
 }
 
 bool FusionComponent::InitAlgorithmPlugin() {
-  fusion_.reset(new fusion::ObstacleMultiSensorFusion());
+  fusion::BaseMultiSensorFusion* fusion =
+    fusion::BaseMultiSensorFusionRegisterer::GetInstanceByName(fusion_name_);
+  CHECK_NOTNULL(fusion);
+  fusion_.reset(fusion);
   fusion::ObstacleMultiSensorFusionParam param;
   param.main_sensor = fusion_main_sensor_;
   param.fusion_method = fusion_method_;

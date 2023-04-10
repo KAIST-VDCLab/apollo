@@ -32,6 +32,7 @@ cc_library(
         "//modules/perception/proto:perception_obstacle_cc_proto",
         "//modules/perception/proto:traffic_light_detection_cc_proto",
         "//modules/planning/proto:planning_cc_proto",
+        "//modules/monitor/proto:system_status_cc_proto",
         "@com_github_gflags_gflags//:gflags",
     ],
 )

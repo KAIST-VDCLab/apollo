@@ -43,6 +43,9 @@
 #include "modules/planning/proto/planning.pb.h"
 #include "modules/prediction/proto/prediction_obstacle.pb.h"
 
+#include "modules/canbus/proto/chassis.pb.h"
+#include "modules/perception/proto/traffic_light_detection.pb.h"
+
 DEFINE_string(channel_monitor_name, "ChannelMonitor",
               "Name of the channel monitor.");
 
@@ -77,6 +80,22 @@ GetReaderAndLatestMessage(const std::string& channel) {
   } else if (channel == FLAGS_perception_obstacle_topic) {
     const auto reader =
         manager->CreateReader<perception::PerceptionObstacles>(channel);
+    reader->Observe();
+    const auto message = reader->GetLatestObserved();
+    return std::pair<std::shared_ptr<cyber::ReaderBase>,
+                     std::shared_ptr<google::protobuf::Message>>(reader,
+                                                                 message);
+  } else if (channel == FLAGS_chassis_topic) {
+    const auto reader =
+        manager->CreateReader<canbus::Chassis>(channel);
+    reader->Observe();
+    const auto message = reader->GetLatestObserved();
+    return std::pair<std::shared_ptr<cyber::ReaderBase>,
+                     std::shared_ptr<google::protobuf::Message>>(reader,
+                                                                 message);
+  } else if (channel == FLAGS_traffic_light_detection_topic) {
+    const auto reader =
+        manager->CreateReader<perception::TrafficLightDetection>(channel);
     reader->Observe();
     const auto message = reader->GetLatestObserved();
     return std::pair<std::shared_ptr<cyber::ReaderBase>,

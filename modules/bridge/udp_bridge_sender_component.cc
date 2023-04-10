@@ -29,6 +29,7 @@ using apollo::bridge::UDPBridgeSenderRemoteInfo;
 using apollo::cyber::io::Session;
 using apollo::localization::LocalizationEstimate;
 using apollo::control::ControlCommand;
+using apollo::monitor::SystemStatus;
 
 template <typename T>
 bool UDPBridgeSenderComponent<T>::Init() {
@@ -86,10 +87,14 @@ bool UDPBridgeSenderComponent<T>::Proc(const std::shared_ptr<T> &pb_msg) {
   return true;
 }
 
-BRIDGE_IMPL(LocalizationEstimate);
+BRIDGE_IMPL(localization::LocalizationEstimate);
 BRIDGE_IMPL(planning::ADCTrajectory);
 BRIDGE_IMPL(control::ControlCommand);
 BRIDGE_IMPL(canbus::Chassis);
+BRIDGE_IMPL(drivers::gnss::GnssBestPose);
+BRIDGE_IMPL(localization::Gps);
+BRIDGE_IMPL(monitor::SystemStatus);
+
 
 }  // namespace bridge
 }  // namespace apollo

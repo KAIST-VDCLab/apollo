@@ -1,39 +1,44 @@
+#sensor_meta {
+#    name: "velodyne128"
+#    type: VELODYNE_128
+#    orientation: PANORAMIC
+#}
+#sensor_meta {
+#    name: "velodyne64"
+#    type: VELODYNE_64
+#    orientation: PANORAMIC
+#}
+#sensor_meta {
+#    name: "velodyne16"
+#    type: VELODYNE_16
+#    orientation: FRONT
+#}
 sensor_meta {
-    name: "velodyne128"
-    type: VELODYNE_128
+    name: "hesai64"
+    type: HESAI_64
     orientation: PANORAMIC
 }
-sensor_meta {
-    name: "velodyne64"
-    type: VELODYNE_64
-    orientation: PANORAMIC
-}
-sensor_meta {
-    name: "velodyne16"
-    type: VELODYNE_16
-    orientation: FRONT
-}
+
+#sensor_meta {
+#    name: "radar_front"
+#    type: LONG_RANGE_RADAR
+#    orientation: FRONT
+#}
+
+#sensor_meta {
+#    name: "radar_rear"
+#    type: LONG_RANGE_RADAR
+#    orientation: REAR
+#}
 
 sensor_meta {
-    name: "radar_front"
-    type: LONG_RANGE_RADAR
-    orientation: FRONT
-}
-
-sensor_meta {
-    name: "radar_rear"
-    type: LONG_RANGE_RADAR
-    orientation: REAR
-}
-
-sensor_meta {
-    name: "front_6mm"
+    name: "camera_front_5mm"
     type: MONOCULAR_CAMERA
     orientation: FRONT
 }
 
 sensor_meta {
-    name: "front_12mm"
+    name: "camera_front_12mm"
     type: MONOCULAR_CAMERA
     orientation: FRONT
 }
