@@ -18,10 +18,11 @@
 
 #include <limits>
 
+#include "modules/drivers/gnss/proto/gnss_best_pose.pb.h"
+
 #include "cyber/time/clock.h"
 #include "modules/common/math/quaternion.h"
 #include "modules/common/util/string_util.h"
-#include "modules/drivers/gnss/proto/gnss_best_pose.pb.h"
 
 namespace apollo {
 namespace localization {
@@ -50,7 +51,7 @@ void RTKLocalization::GpsCallback(
   if (time_delay > gps_time_delay_tolerance_) {
     std::stringstream ss;
     ss << "GPS message time interval: " << time_delay;
-    monitor_logger_.WARN(ss.str());
+    monitor_logger_.ERROR(ss.str());
   }
 
   {
@@ -117,6 +118,56 @@ bool RTKLocalization::IsServiceStarted() { return service_started_; }
 
 void RTKLocalization::GetLocalization(LocalizationEstimate *localization) {
   *localization = last_localization_result_;
+
+  if ((localization->pose().position().y() >=
+       1.8103882 * localization->pose().position().x() + 3576030.0) &&
+      (localization->pose().position().y() <=
+       1.8103882 * localization->pose().position().x() + 3576128.35) &&
+      (localization->pose().position().y() <=
+       -0.55236773 * localization->pose().position().x() + 4290983.47) &&
+      (localization->pose().position().y() >=
+       -0.55236773 * localization->pose().position().x() + 4290899.31)) {
+    std::stringstream ss;
+    ss << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n";
+    monitor_logger_.SCHOOL(ss.str());
+  } else if ((localization->pose().position().y() >=
+              1.8103882 * localization->pose().position().x() + 3576030.0) &&
+             (localization->pose().position().y() <=
+              1.8103882 * localization->pose().position().x() + 3576135.0) &&
+             (localization->pose().position().y() <=
+              -0.55236773 * localization->pose().position().x() + 4291005.36) &&
+             (localization->pose().position().y() >=
+              -0.55236773 * localization->pose().position().x() + 4290876.38)) {
+    std::stringstream ss;
+    ss << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n"
+       << "@@@@@School Zone@@@@@\n";
+    monitor_logger_.SCHOOL(ss.str());
+  } else {
+        std::stringstream ss;
+    ss << "";
+    monitor_logger_.ERROR(ss.str());
+  }
 }
 
 void RTKLocalization::GetLocalizationStatus(

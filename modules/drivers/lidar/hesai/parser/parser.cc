@@ -118,6 +118,21 @@ bool Parser::Parse(const std::shared_ptr<HesaiScan>& scan) {
   return true;
 }
 
+int Parser::Parse_vdc(const uint8_t* data, int size, bool* is_end) {
+  bool t_is_end = false;
+  ParseRawPacket(data, size, &t_is_end);
+  ++packet_nums_;
+  *is_end = CheckIsEnd(t_is_end);
+  if (*is_end == false) {
+    return 0;
+  }
+  packet_nums_ = 0;
+  int status = PublishRawPointCloud_vdc();
+  ResetRawPointCloud();
+  return status;
+}
+
+
 void Parser::Parse(const uint8_t* data, int size, bool* is_end) {
   bool t_is_end = false;
   ParseRawPacket(data, size, &t_is_end);
@@ -167,6 +182,45 @@ void Parser::PublishRawPointCloud(int seq) {
                                             1e9);
   raw_pointcloud_out_->mutable_header()->set_lidar_timestamp(timestamp);
   raw_pointcloud_writer_->Write(raw_pointcloud_out_);
+}
+
+int Parser::PublishRawPointCloud_vdc(int seq) {
+  int size = raw_pointcloud_out_->point_size();
+  if (size == 0) {
+    AWARN << "All points size is NAN! Please check hesai:" << conf_.model();
+    return 0;
+  }
+
+  // AWARN << "[SHH] PublishRawPointCloud()\n"
+  //       << "point size: " << size << '\n'
+  //       // << "point: " << raw_pointcloud_out_->point() << '\n'
+  //       << "max x: " << raw_pointcloud_out_->max_x() << '\n'
+  //       << "max y: " << raw_pointcloud_out_->max_y() << '\n'
+  //       << "min x: " << fabs(raw_pointcloud_out_->min_x()) << '\n'
+  //       << "min y: " << fabs(raw_pointcloud_out_->min_y()) << '\n';
+
+  float threshold = 1.0;
+  if (raw_pointcloud_out_->max_x() < threshold || raw_pointcloud_out_->max_y() < threshold || fabs(raw_pointcloud_out_->min_x()) < threshold || fabs(raw_pointcloud_out_->min_y()) < threshold)
+    return -1;
+        // << "point: " << raw_pointcloud_out_->point(static_cast<int>(size) - 1).x() << '\n'
+
+
+  raw_pointcloud_out_->mutable_header()->set_sequence_num(seq_index_++);
+  if (seq > 0) {
+    raw_pointcloud_out_->mutable_header()->set_sequence_num(seq);
+  }
+  raw_pointcloud_out_->mutable_header()->set_frame_id(conf_.frame_id());
+  raw_pointcloud_out_->mutable_header()->set_timestamp_sec(
+      cyber::Time().Now().ToSecond());
+  raw_pointcloud_out_->set_height(1);
+  raw_pointcloud_out_->set_width(size);
+  const auto timestamp =
+      raw_pointcloud_out_->point(static_cast<int>(size) - 1).timestamp();
+  raw_pointcloud_out_->set_measurement_time(static_cast<double>(timestamp) /
+                                            1e9);
+  raw_pointcloud_out_->mutable_header()->set_lidar_timestamp(timestamp);
+  raw_pointcloud_writer_->Write(raw_pointcloud_out_);
+  return 0;
 }
 
 void Parser::LoadCalibrationThread() {

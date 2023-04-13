@@ -37,8 +37,6 @@ message TrafficLight {
     YELLOW = 2;
     GREEN = 3;
     BLACK = 4;
-    RED_LEFTTURN = 5;
-    GREEN_LEFTTURN = 6;
   };
   optional Color color = 1;
 

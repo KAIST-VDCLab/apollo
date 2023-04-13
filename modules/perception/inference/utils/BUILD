@@ -10,6 +10,7 @@ cuda_library(
     hdrs = ["cuda_util.h"],
     deps = [
         "//cyber",
+        "@boost",
         "@local_config_cuda//cuda:cudart",
     ],
 )
@@ -65,6 +66,7 @@ cuda_library(
         "//cyber",
         "//modules/perception/base:blob",
         "//modules/perception/base:image",
+        "@local_config_cuda//cuda:cublas",
         "@local_config_cuda//cuda:cudart",
     ],
 )
@@ -130,7 +132,7 @@ cc_library(
 )
 
 cc_test(
-    name = "inference_binary_data_test",
+    name = "binary_data_test",
     size = "small",
     srcs = ["binary_data_test.cc"],
     data = [

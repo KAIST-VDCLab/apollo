@@ -1,4 +1,4 @@
 topic_name: "/apollo/perception/traffic_light"
-bind_port: 90901
+bind_port: 15111
 proto_name: "TrafficLight"
 enable_timeout: false

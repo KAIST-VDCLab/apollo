@@ -1,6 +1,6 @@
 
 camera_dev: "/dev/camera/front_12mm"
-frame_id: "camera_front_12mm"
+frame_id: "front_12mm"
 pixel_format: "yuyv"
 io_method: IO_METHOD_MMAP
 width: 1920

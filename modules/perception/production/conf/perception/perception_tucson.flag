@@ -101,7 +101,7 @@
 # enable ground removal
 # type: bool
 # default: true
---enable_ground_removal=false
+--enable_ground_removal=true
 
 # remove point cloud that under this height
 # type: double

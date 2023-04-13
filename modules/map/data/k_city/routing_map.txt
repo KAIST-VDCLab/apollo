@@ -4284,14 +4284,6 @@ node {
 node {
   lane_id: "A219BS010567"
   length: 40.637275056608289
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 40.637275056608289
-    }
-  }
   cost: 20.319450257551015
   central_curve {
     segment {
@@ -5369,14 +5361,6 @@ node {
 node {
   lane_id: "A219BS010316"
   length: 101.79655436175655
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 101.79655436175655
-    }
-  }
   right_out {
     start {
       s: 0
@@ -5617,14 +5601,6 @@ node {
 node {
   lane_id: "LN000016"
   length: 21.43642597380715
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 21.43642597380715
-    }
-  }
   cost: 10.718641706848823
   central_curve {
     segment {
@@ -6058,14 +6034,6 @@ node {
 node {
   lane_id: "A219BS010312"
   length: 164.17996483232773
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 164.17996483232773
-    }
-  }
   right_out {
     start {
       s: 0
@@ -6730,14 +6698,6 @@ node {
 node {
   lane_id: "A219BS010565"
   length: 7.7903340765295921
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 7.7903340765295921
-    }
-  }
   cost: 3.8953228418303176
   central_curve {
     segment {
@@ -6769,6 +6729,14 @@ node {
 node {
   lane_id: "A219BS010303"
   length: 164.31551548701952
+  left_out {
+    start {
+      s: 0
+    }
+    end {
+      s: 164.31551548701952
+    }
+  }
   cost: 82.161043988095926
   central_curve {
     segment {
@@ -6975,14 +6943,6 @@ node {
 node {
   lane_id: "A219BS010318"
   length: 143.06394373058123
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 143.06394373058123
-    }
-  }
   right_out {
     start {
       s: 0
@@ -7121,14 +7081,6 @@ node {
 node {
   lane_id: "A219BS010124"
   length: 1.2660064026038387
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 1.2660064026038387
-    }
-  }
   cost: 0.63302852092358908
   central_curve {
     segment {
@@ -7540,14 +7492,6 @@ node {
 node {
   lane_id: "A219BS010609"
   length: 23.779719755753352
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 23.779719755753352
-    }
-  }
   cost: 11.890335462760282
   central_curve {
     segment {
@@ -7662,14 +7606,6 @@ node {
 node {
   lane_id: "LN000005"
   length: 26.917228869161814
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 26.917228869161814
-    }
-  }
   cost: 13.459152768391828
   central_curve {
     segment {
@@ -8208,14 +8144,6 @@ node {
 node {
   lane_id: "A219BS010102"
   length: 122.20179218926755
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 122.20179218926755
-    }
-  }
   right_out {
     start {
       s: 0
@@ -8917,14 +8845,6 @@ node {
 node {
   lane_id: "A219BS010418"
   length: 28.614866213762493
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 28.614866213762493
-    }
-  }
   right_out {
     start {
       s: 0
@@ -9252,14 +9172,6 @@ node {
 node {
   lane_id: "A219BS010122"
   length: 40.373140570311122
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 40.373140570311122
-    }
-  }
   cost: 20.187377731818355
   central_curve {
     segment {
@@ -10724,14 +10636,6 @@ node {
 node {
   lane_id: "LN000004"
   length: 26.749998495838771
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 26.749998495838771
-    }
-  }
   cost: 13.375534237189729
   central_curve {
     segment {
@@ -10971,6 +10875,14 @@ node {
 node {
   lane_id: "A219BS010309"
   length: 6.9524956065377221
+  right_out {
+    start {
+      s: 0
+    }
+    end {
+      s: 6.9524956065377221
+    }
+  }
   cost: 3.4763868504001048
   central_curve {
     segment {
@@ -11653,6 +11565,14 @@ node {
       s: 6.9002715703544562
     }
   }
+  right_out {
+    start {
+      s: 0
+    }
+    end {
+      s: 6.9002715703544562
+    }
+  }
   cost: 3.4502737878486367
   central_curve {
     segment {
@@ -11692,14 +11612,6 @@ node {
 node {
   lane_id: "A219BS010123"
   length: 1.2693106788898993
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 1.2693106788898993
-    }
-  }
   cost: 0.63468072515082352
   central_curve {
     segment {
@@ -11735,14 +11647,6 @@ node {
 node {
   lane_id: "A219BS010319"
   length: 143.0963995472718
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 143.0963995472718
-    }
-  }
   cost: 71.551061644390572
   central_curve {
     segment {
@@ -12083,14 +11987,6 @@ node {
 node {
   lane_id: "A219BS010317"
   length: 101.79058994167572
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 101.79058994167572
-    }
-  }
   cost: 50.897330741922083
   central_curve {
     segment {
@@ -12336,6 +12232,14 @@ node {
   lane_id: "A219BS010304"
   length: 62.83708352147697
   left_out {
+    start {
+      s: 0
+    }
+    end {
+      s: 62.83708352147697
+    }
+  }
+  right_out {
     start {
       s: 0
     }
@@ -12854,6 +12758,14 @@ node {
   lane_id: "A219BS010310"
   length: 164.16725892168947
   left_out {
+    start {
+      s: 0
+    }
+    end {
+      s: 164.16725892168947
+    }
+  }
+  right_out {
     start {
       s: 0
     }
@@ -13754,14 +13666,6 @@ node {
 node {
   lane_id: "A219BS010105"
   length: 26.754075727084441
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 26.754075727084441
-    }
-  }
   cost: 13.377572934355559
   central_curve {
     segment {
@@ -13940,14 +13844,6 @@ node {
 node {
   lane_id: "A219BS010121"
   length: 40.376583939611265
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 40.376583939611265
-    }
-  }
   right_out {
     start {
       s: 0
@@ -15663,14 +15559,6 @@ node {
 node {
   lane_id: "A219BS010434"
   length: 92.041112866911391
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 92.041112866911391
-    }
-  }
   cost: 46.022397218898057
   central_curve {
     segment {
@@ -19750,14 +19638,6 @@ node {
 node {
   lane_id: "A219BS010417"
   length: 28.591793387902456
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 28.591793387902456
-    }
-  }
   cost: 14.296468518382726
   central_curve {
     segment {
@@ -19974,14 +19854,6 @@ node {
 node {
   lane_id: "A219BS010104"
   length: 26.73117137556272
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 26.73117137556272
-    }
-  }
   right_out {
     start {
       s: 0
@@ -20467,14 +20339,6 @@ node {
 node {
   lane_id: "A219BS010082"
   length: 122.10683508299884
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 122.10683508299884
-    }
-  }
   cost: 61.0558596293603
   central_curve {
     segment {
@@ -20668,14 +20532,6 @@ node {
 node {
   lane_id: "A219BS010435"
   length: 92.052091156291667
-  left_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 92.052091156291667
-    }
-  }
   cost: 46.027886583149595
   central_curve {
     segment {
@@ -23099,14 +22955,6 @@ node {
 node {
   lane_id: "A219BS010313"
   length: 164.18657797039106
-  right_out {
-    start {
-      s: 0
-    }
-    end {
-      s: 164.18657797039106
-    }
-  }
   cost: 82.096572651082923
   central_curve {
     segment {
@@ -24173,12 +24021,6 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "A219BS010567"
-  to_lane_id: "A219BS010568"
-  cost: 682.39862497375009
-  direction_type: LEFT
-}
-edge {
   from_lane_id: "A219BS010566"
   to_lane_id: "A219BS010101"
   cost: 0
@@ -24312,12 +24154,6 @@ edge {
 }
 edge {
   from_lane_id: "A219BS010316"
-  to_lane_id: "A219BS010317"
-  cost: 500
-  direction_type: LEFT
-}
-edge {
-  from_lane_id: "A219BS010316"
   to_lane_id: "A219BS010315"
   cost: 500
   direction_type: RIGHT
@@ -24444,12 +24280,6 @@ edge {
 }
 edge {
   from_lane_id: "A219BS010312"
-  to_lane_id: "A219BS010313"
-  cost: 500
-  direction_type: LEFT
-}
-edge {
-  from_lane_id: "A219BS010312"
   to_lane_id: "A219BS010311"
   cost: 500
   direction_type: RIGHT
@@ -24533,16 +24363,16 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "A219BS010565"
-  to_lane_id: "A219BS010309"
-  cost: 8130.0064033506042
-  direction_type: RIGHT
-}
-edge {
   from_lane_id: "A219BS010303"
   to_lane_id: "A219BS010314"
   cost: 0
   direction_type: FORWARD
+}
+edge {
+  from_lane_id: "A219BS010303"
+  to_lane_id: "A219BS010310"
+  cost: 500
+  direction_type: LEFT
 }
 edge {
   from_lane_id: "A219BS010393"
@@ -24561,12 +24391,6 @@ edge {
   to_lane_id: "A219BS010121"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010318"
-  to_lane_id: "A219BS010319"
-  cost: 500
-  direction_type: LEFT
 }
 edge {
   from_lane_id: "A219BS010318"
@@ -24591,12 +24415,6 @@ edge {
   to_lane_id: "A219BS010082"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010124"
-  to_lane_id: "A219BS010123"
-  cost: 124099.82176577358
-  direction_type: RIGHT
 }
 edge {
   from_lane_id: "A219BS010459"
@@ -24683,12 +24501,6 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "LN000005"
-  to_lane_id: "LN000004"
-  cost: 1265.8419673180044
-  direction_type: LEFT
-}
-edge {
   from_lane_id: "A219BS010111"
   to_lane_id: "A219BS010109"
   cost: 0
@@ -24747,12 +24559,6 @@ edge {
   to_lane_id: "A219BS010111"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010102"
-  to_lane_id: "A219BS010082"
-  cost: 500
-  direction_type: LEFT
 }
 edge {
   from_lane_id: "A219BS010102"
@@ -24870,12 +24676,6 @@ edge {
 }
 edge {
   from_lane_id: "A219BS010418"
-  to_lane_id: "A219BS010417"
-  cost: 1154.881517995251
-  direction_type: LEFT
-}
-edge {
-  from_lane_id: "A219BS010418"
   to_lane_id: "A219BS010419"
   cost: 1154.881517995251
   direction_type: RIGHT
@@ -24915,12 +24715,6 @@ edge {
   to_lane_id: "A219BS010105"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010122"
-  to_lane_id: "A219BS010121"
-  cost: 689.10628355733036
-  direction_type: RIGHT
 }
 edge {
   from_lane_id: "A219BS010599"
@@ -25121,16 +24915,16 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "LN000004"
-  to_lane_id: "LN000005"
-  cost: 1277.7308124898259
-  direction_type: RIGHT
-}
-edge {
   from_lane_id: "A219BS010309"
   to_lane_id: "A219BS010312"
   cost: 0
   direction_type: FORWARD
+}
+edge {
+  from_lane_id: "A219BS010309"
+  to_lane_id: "A219BS010322"
+  cost: 9643.0390663181133
+  direction_type: RIGHT
 }
 edge {
   from_lane_id: "LN000014"
@@ -25193,6 +24987,12 @@ edge {
   direction_type: LEFT
 }
 edge {
+  from_lane_id: "A219BS010322"
+  to_lane_id: "A219BS010321"
+  cost: 9752.7195498438723
+  direction_type: RIGHT
+}
+edge {
   from_lane_id: "A219BS010123"
   to_lane_id: "A219BS010083"
   cost: 0
@@ -25205,22 +25005,10 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "A219BS010123"
-  to_lane_id: "A219BS010124"
-  cost: 123615.55130138677
-  direction_type: LEFT
-}
-edge {
   from_lane_id: "A219BS010319"
   to_lane_id: "A219BS010122"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010319"
-  to_lane_id: "A219BS010318"
-  cost: 500
-  direction_type: RIGHT
 }
 edge {
   from_lane_id: "A219BS010095"
@@ -25271,12 +25059,6 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "A219BS010317"
-  to_lane_id: "A219BS010316"
-  cost: 500
-  direction_type: RIGHT
-}
-edge {
   from_lane_id: "A219BS010085"
   to_lane_id: "A219BS010618"
   cost: 0
@@ -25311,6 +25093,12 @@ edge {
   to_lane_id: "A219BS010308"
   cost: 500
   direction_type: LEFT
+}
+edge {
+  from_lane_id: "A219BS010304"
+  to_lane_id: "A219BS010305"
+  cost: 500
+  direction_type: RIGHT
 }
 edge {
   from_lane_id: "LN000011"
@@ -25395,6 +25183,12 @@ edge {
   to_lane_id: "A219BS010311"
   cost: 500
   direction_type: LEFT
+}
+edge {
+  from_lane_id: "A219BS010310"
+  to_lane_id: "A219BS010303"
+  cost: 500
+  direction_type: RIGHT
 }
 edge {
   from_lane_id: "LN000002"
@@ -25505,12 +25299,6 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "A219BS010105"
-  to_lane_id: "A219BS010104"
-  cost: 1277.4387407943505
-  direction_type: RIGHT
-}
-edge {
   from_lane_id: "A219BS010380"
   to_lane_id: "A219BS010669"
   cost: 0
@@ -25533,12 +25321,6 @@ edge {
   to_lane_id: "A219BS010104"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010121"
-  to_lane_id: "A219BS010122"
-  cost: 689.018133572889
-  direction_type: LEFT
 }
 edge {
   from_lane_id: "A219BS010121"
@@ -25731,12 +25513,6 @@ edge {
   to_lane_id: "LN000006"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010434"
-  to_lane_id: "A219BS010435"
-  cost: 500
-  direction_type: RIGHT
 }
 edge {
   from_lane_id: "A219BS010618"
@@ -26237,12 +26013,6 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "A219BS010417"
-  to_lane_id: "A219BS010418"
-  cost: 1156.279738533646
-  direction_type: RIGHT
-}
-edge {
   from_lane_id: "A219BS010419"
   to_lane_id: "A219BS010632"
   cost: 0
@@ -26283,12 +26053,6 @@ edge {
   to_lane_id: "A219BS010123"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010104"
-  to_lane_id: "A219BS010105"
-  cost: 1279.08093440878
-  direction_type: LEFT
 }
 edge {
   from_lane_id: "A219BS010104"
@@ -26375,12 +26139,6 @@ edge {
   direction_type: FORWARD
 }
 edge {
-  from_lane_id: "A219BS010082"
-  to_lane_id: "A219BS010102"
-  cost: 500
-  direction_type: RIGHT
-}
-edge {
   from_lane_id: "A219BS010075"
   to_lane_id: "A219BS010624"
   cost: 0
@@ -26415,12 +26173,6 @@ edge {
   to_lane_id: "LN000007"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010435"
-  to_lane_id: "A219BS010434"
-  cost: 500
-  direction_type: LEFT
 }
 edge {
   from_lane_id: "ALN000009"
@@ -26625,12 +26377,6 @@ edge {
   to_lane_id: "A219BS010317"
   cost: 0
   direction_type: FORWARD
-}
-edge {
-  from_lane_id: "A219BS010313"
-  to_lane_id: "A219BS010312"
-  cost: 500
-  direction_type: RIGHT
 }
 edge {
   from_lane_id: "A219BS010461"

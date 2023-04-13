@@ -128,16 +128,11 @@ bool ProbabilisticFusion::Fuse(const FusionOptions& options,
     }
 
     bool is_publish_sensor = this->IsPublishSensor(sensor_frame);
-    if (is_publish_sensor) {
-      started_ = true;
-    }
 
-    if (started_) {
-      AINFO << "add sensor measurement: " << sensor_frame->sensor_info.name
-            << ", obj_cnt : " << sensor_frame->objects.size() << ", "
-            << FORMAT_TIMESTAMP(sensor_frame->timestamp);
-      sensor_data_manager->AddSensorMeasurements(sensor_frame);
-    }
+    AINFO << "add sensor measurement: " << sensor_frame->sensor_info.name
+          << ", obj_cnt : " << sensor_frame->objects.size() << ", "
+          << FORMAT_TIMESTAMP(sensor_frame->timestamp);
+    sensor_data_manager->AddSensorMeasurements(sensor_frame);
 
     if (!is_publish_sensor) {
       return true;
@@ -166,16 +161,7 @@ std::string ProbabilisticFusion::Name() const { return "ProbabilisticFusion"; }
 bool ProbabilisticFusion::IsPublishSensor(
     const base::FrameConstPtr& sensor_frame) const {
   std::string sensor_id = sensor_frame->sensor_info.name;
-  return sensor_id == main_sensor_;
-  // const std::vector<std::string>& pub_sensors =
-  //   params_.publish_sensor_ids;
-  // const auto& itr = std::find(
-  //   pub_sensors.begin(), pub_sensors.end(), sensor_id);
-  // if (itr != pub_sensors.end()) {
-  //   return true;
-  // } else {
-  //   return false;
-  // }
+  return main_sensor_ == sensor_id;
 }
 
 void ProbabilisticFusion::FuseFrame(const SensorFramePtr& frame) {
@@ -352,7 +338,7 @@ void ProbabilisticFusion::RemoveLostTrack() {
     }
   }
   AINFO << "Remove " << foreground_tracks.size() - foreground_track_count
-        << " foreground tracks";
+        << " foreground tracks. " << foreground_track_count << " tracks left.";
   foreground_tracks.resize(foreground_track_count);
   trackers_.resize(foreground_track_count);
 

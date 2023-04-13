@@ -3,7 +3,7 @@ header:
   stamp:
     secs: 0
     nsecs: 0
-  frame_id: front_6mm
+  frame_id: hesai64
 child_frame_id: front_12mm
 transform:
   translation:

@@ -19,22 +19,21 @@
 #include <memory>
 #include <string>
 
-#include "cyber/class_loader/class_loader.h"
-#include "cyber/component/timer_component.h"
-#include "cyber/time/time.h"
-
 #include "modules/canbus/proto/chassis.pb.h"
-#include "modules/common/monitor_log/monitor_log_buffer.h"
 #include "modules/control/proto/control_cmd.pb.h"
 #include "modules/control/proto/control_conf.pb.h"
 #include "modules/control/proto/pad_msg.pb.h"
+#include "modules/control/proto/preprocessor.pb.h"
 #include "modules/localization/proto/localization.pb.h"
 #include "modules/planning/proto/planning.pb.h"
 
+#include "cyber/class_loader/class_loader.h"
+#include "cyber/component/timer_component.h"
+#include "cyber/time/time.h"
+#include "modules/common/monitor_log/monitor_log_buffer.h"
 #include "modules/common/util/util.h"
 #include "modules/control/common/dependency_injector.h"
 #include "modules/control/controller/controller_agent.h"
-#include "modules/control/proto/preprocessor.pb.h"
 #include "modules/control/submodules/preprocessor_submodule.h"
 
 /**
@@ -75,6 +74,9 @@ class ControlComponent final : public apollo::cyber::TimerComponent {
   // Upon receiving monitor message
   void OnMonitor(
       const apollo::common::monitor::MonitorMessage &monitor_message);
+
+  // for running time - by sklee
+  double get_time();
 
   common::Status ProduceControlCommand(ControlCommand *control_command);
   common::Status CheckInput(LocalView *local_view);
@@ -121,6 +123,14 @@ class ControlComponent final : public apollo::cyber::TimerComponent {
   LocalView local_view_;
 
   std::shared_ptr<DependencyInjector> injector_;
+
+  double start_t_ = 0.0;
+  double end_t_ = 0.0;
+  double dt_t_ = 0.0;
+
+  /*for planning module save Running sequence_num*/
+  unsigned int OnPlanning_sequence_num = 0;
+  double Onplanning_ccumulative_time_ = 0.0;
 };
 
 CYBER_REGISTER_COMPONENT(ControlComponent)

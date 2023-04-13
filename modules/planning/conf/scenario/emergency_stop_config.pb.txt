@@ -1,6 +1,6 @@
 scenario_type: EMERGENCY_STOP
 emergency_stop_config: {
-  max_stop_deceleration: 6.0
+  max_stop_deceleration: 5.0
   stop_distance: 1.0
 }
 

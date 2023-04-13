@@ -16,6 +16,7 @@
 #include "modules/control/control_component.h"
 
 #include "absl/strings/str_cat.h"
+
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
 #include "cyber/time/clock.h"
@@ -136,9 +137,19 @@ void ControlComponent::OnChassis(const std::shared_ptr<Chassis> &chassis) {
 
 void ControlComponent::OnPlanning(
     const std::shared_ptr<ADCTrajectory> &trajectory) {
+  Onplanning_ccumulative_time_ += get_time();
   ADEBUG << "Received chassis data: run trajectory callback.";
   std::lock_guard<std::mutex> lock(mutex_);
   latest_trajectory_.CopyFrom(*trajectory);
+
+  if (Onplanning_ccumulative_time_ >= 1.5) {
+    if (trajectory.get()->header().sequence_num() == OnPlanning_sequence_num) {
+      std::cout << "Stop planning " << std::endl;
+      abort();
+    }
+    OnPlanning_sequence_num = trajectory.get()->header().sequence_num();
+    Onplanning_ccumulative_time_ = 0.0;
+  }
 }
 
 void ControlComponent::OnLocalization(
@@ -485,6 +496,13 @@ Status ControlComponent::CheckTimestamp(const LocalView &local_view) {
     return Status(ErrorCode::CONTROL_COMPUTE_ERROR, "Trajectory msg timeout");
   }
   return Status::OK();
+}
+
+double ControlComponent::get_time() {
+  start_t_ = Clock::Now().ToSecond();
+  if (end_t_ != 0) dt_t_ = start_t_ - end_t_;
+  end_t_ = start_t_;
+  return dt_t_;
 }
 
 }  // namespace control

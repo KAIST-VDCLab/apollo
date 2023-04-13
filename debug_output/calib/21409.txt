@@ -1,0 +1,2 @@
+camera_ground_height:	1.910000
+pitch_angle:	1.570796

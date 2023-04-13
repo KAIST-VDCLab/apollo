@@ -1,8 +1,10 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("//tools/install:install.bzl", "install")
 load("//tools:cpplint.bzl", "cpplint")
 
 package(default_visibility = ["//visibility:public"])
-PERCEPTION_COPTS = [ '-DMODULE_NAME=\\"perception\\"' ]
+
+PERCEPTION_COPTS = ['-DMODULE_NAME=\\"perception\\"']
 
 cc_binary(
     name = "libperception_component_camera.so",
@@ -11,30 +13,69 @@ cc_binary(
     deps = [":perception_component_inner_camera"],
 )
 
+install(
+    name = "install",
+    targets = [
+        ":libperception_component_camera.so",
+        ":libperception_component_lidar.so",
+    ],
+    deps = [
+        "//cyber:install",
+        "//modules/perception/production:install",
+    ],
+)
+
 cc_library(
     name = "perception_component_inner_camera",
     srcs = [
+        "camera_obstacle_detection_component.cc",
+        "camera_perception_viz_message.cc",
+        "fusion_camera_detection_component.cc",
+        "lane_detection_component.cc",
         "trafficlights_perception_component.cc",
     ],
     hdrs = [
+        "camera_obstacle_detection_component.h",
+        "camera_perception_viz_message.h",
+        "fusion_camera_detection_component.h",
+        "lane_detection_component.h",
         "trafficlights_perception_component.h",
     ],
     copts = PERCEPTION_COPTS,
     deps = [
         "//cyber",
+        "//cyber/time:clock",
         "//modules/common/math",
+        "//modules/common/proto:error_code_cc_proto",
+        "//modules/common/proto:geometry_cc_proto",
+        "//modules/common/proto:header_cc_proto",
+        "//modules/common/util:eigen_defs",
         "//modules/common/util:time_util",
         "//modules/drivers/proto:sensor_image_cc_proto",
         "//modules/map/proto:map_cc_proto",
         "//modules/perception/base",
+        "//modules/perception/camera/lib/interface",
+        "//modules/perception/camera/app:cipv_camera",
+        "//modules/perception/camera/app:lane_camera_perception",
+        "//modules/perception/camera/app:obstacle_camera_perception",
+        "//modules/perception/camera/app:obstacle_detection_camera",
         "//modules/perception/camera/app:traffic_light_camera_perception",
-        "//modules/perception/camera/common",
         "//modules/perception/camera/lib/traffic_light/preprocessor:tl_preprocessor",
+        "//modules/perception/camera/common",
+        "//modules/perception/camera/lib/motion_service:motion_service_lib",
+        "//modules/perception/camera/tools/offline:transform_server",
+        "//modules/perception/camera/tools/offline:visualizer",
         "//modules/perception/common/sensor_manager",
         "//modules/perception/map/hdmap:hdmap_input",
         "//modules/perception/onboard/common_flags",
+        "//modules/perception/onboard/inner_component_messages",
+        "//modules/perception/onboard/msg_serializer",
+        "//modules/perception/onboard/proto:fusion_camera_detection_component_cc_proto",
+        "//modules/perception/onboard/proto:lane_perception_component_cc_proto",
         "//modules/perception/onboard/proto:trafficlights_perception_component_cc_proto",
         "//modules/perception/onboard/transform_wrapper",
+        "//modules/perception/proto:perception_camera_cc_proto",
+        "//modules/perception/proto:perception_lane_cc_proto",
         "//modules/perception/proto:traffic_light_detection_cc_proto",
         "//modules/transform/proto:transform_cc_proto",
         "//modules/v2x/common:v2x_proxy_gflags",
@@ -88,8 +129,18 @@ cc_library(
         "//modules/common/util:string_util",
         "//modules/perception/common/sensor_manager",
         "//modules/perception/lib/registerer",
-        "//modules/perception/lidar/app:lidar_obstacle_detection",
         "//modules/perception/lidar/common",
+        "//modules/perception/lidar/app:lidar_obstacle_detection",
+        "//modules/perception/lidar/lib/ground_detector/spatio_temporal_ground_detector",
+        "//modules/perception/lidar/lib/interface",
+        "//modules/perception/lidar/lib/object_builder",
+        "//modules/perception/lidar/lib/object_filter_bank/roi_boundary_filter",
+        "//modules/perception/lidar/lib/roi_filter/hdmap_roi_filter",
+        "//modules/perception/lidar/lib/scene_manager/ground_service",
+        "//modules/perception/lidar/lib/scene_manager/roi_service",
+        "//modules/perception/lidar/lib/detector/point_pillars_detection:point_pillars_detection",
+        "//modules/perception/lidar/lib/detector/cnn_segmentation:cnn_segmentation",
+        "//modules/perception/lidar/lib/detector/ncut_segmentation:ncut_segmentation",
         "//modules/perception/onboard/common_flags",
         "//modules/perception/onboard/proto:lidar_component_config_cc_proto",
         "//modules/perception/onboard/transform_wrapper",
@@ -109,6 +160,7 @@ cc_library(
         "//modules/perception/fusion/lib/dummy:dummy_algorithms",
         "//modules/perception/fusion/lib/fusion_system/probabilistic_fusion",
         "//modules/perception/fusion/lib/interface",
+        "//modules/perception/fusion/lib/interface:base_multisensor_fusion",
         "//modules/perception/lib/registerer",
         "//modules/perception/lidar/lib/classifier/fused_classifier",
         "//modules/perception/lidar/lib/classifier/fused_classifier:ccrf_type_fusion",
@@ -119,6 +171,7 @@ cc_library(
         "//modules/perception/onboard/proto:fusion_component_config_cc_proto",
         "@eigen",
     ],
+    alwayslink = True,
 )
 
 cc_library(
@@ -160,6 +213,7 @@ cc_library(
         "//modules/perception/radar/lib/tracker/filter:adaptive_kalman_filter",
         "//modules/perception/radar/lib/tracker/matcher:hm_matcher",
     ],
+    alwayslink = True,
 )
 
 cc_library(
@@ -185,6 +239,7 @@ cc_library(
         "//modules/perception/lidar/lib/tracker/multi_lidar_fusion:mlf_tracker",
         "//modules/perception/onboard/proto:lidar_component_config_cc_proto",
     ],
+    alwayslink = True,
 )
 
 cpplint()

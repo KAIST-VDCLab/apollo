@@ -6,7 +6,7 @@ header:
     secs: 1422601952
     nsecs: 288805456
   seq: 0
-  frame_id: hesai64
+  frame_id: novatel
 transform:
   translation:
     x: 0
@@ -15,6 +15,6 @@ transform:
   rotation:
     x: 0
     y: 0
-    z: -0.7071068 #0
-    w: 0.7071068 #0.001
-child_frame_id: novatel
+    z: -0.694658
+    w: 0.719339
+child_frame_id: hesai64

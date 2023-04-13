@@ -48,7 +48,7 @@ def read_parameters(yaml_file):
     function to read YAML parameter file and define output destinations
     """
     with open(yaml_file, 'r') as f:
-        params = yaml.load(f)
+        params = yaml.safe_load(f)
     # record file params
     RECORD_FOLDER = params['records']['filepath']
     parse_type = params['parse']
@@ -131,7 +131,7 @@ def parse_apollo_record(parse_dict, dest_dict, parser_func):
 
 if __name__ == '__main__':
     cyber.init()
-    parse_dict = read_parameters('parser_params.yaml')
+    parse_dict = read_parameters('/apollo/modules/tools/record_parse_save/parser_params.yaml')
     dest_dict, parser_func = define_destinations(parse_dict)
     parse_apollo_record(parse_dict, dest_dict, parser_func)
 

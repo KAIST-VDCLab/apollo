@@ -61,7 +61,7 @@ proj4_text: "+proj=utm +zone=52 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no
 
 tf {
     frame_id: "world"
-    child_frame_id: "novatel"
+    child_frame_id: "localization"
     enable: true
 }
 
@@ -73,8 +73,9 @@ gpsbin_folder: "/apollo/data/gpsbin"
 #########################################################################
 # notice: only for debug, won't configure device through driver online!!!
 #########################################################################
- login_commands: "SETINSTRANSLATION USER -0.32 0 -0.6 0.05 0.05 0.05\r\n"
- login_commands: "SETINSTRANSLATION ANT1 -0.32 0.15 0.45 0.05 0.05 0.05\r\n"
+# login_commands: "SETINSTRANSLATION USER 0.0 0.6 1.085 0.05 0.05 0.05\r\n"
+ login_commands: "SETINSTRANSLATION ANT1 0.0 1.03 0.95 0.05 0.05 0.05\r\n"
+ login_commands: "SETINSROTATION RBV 0.0 0.0 -1.9 0.1 0.1 0.1\r\n"
  login_commands: "UNLOGALL THISPORT\r\n"
 # login_commands: "LOG COM2 GPRMC ONTIME 1.0 0.25\r\n"
 # login_commands: "EVENTOUTCONTROL MARK2 ENABLE POSITIVE 999999990 10\r\n"

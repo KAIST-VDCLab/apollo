@@ -29,6 +29,9 @@
 #include "modules/planning/proto/planning.pb.h"
 #include "modules/control/proto/control_cmd.pb.h"
 #include "modules/canbus/proto/chassis.pb.h"
+#include "modules/drivers/gnss/proto/gnss_best_pose.pb.h"
+#include "modules/localization/proto/gps.pb.h"
+#include "modules/monitor/proto/system_status.pb.h"
 
 #include "cyber/class_loader/class_loader.h"
 #include "cyber/component/component.h"
@@ -69,6 +72,9 @@ BRIDGE_COMPONENT_REGISTER(planning::ADCTrajectory)
 BRIDGE_COMPONENT_REGISTER(localization::LocalizationEstimate)
 BRIDGE_COMPONENT_REGISTER(control::ControlCommand)
 BRIDGE_COMPONENT_REGISTER(canbus::Chassis)
+BRIDGE_COMPONENT_REGISTER(drivers::gnss::GnssBestPose)
+BRIDGE_COMPONENT_REGISTER(localization::Gps)
+BRIDGE_COMPONENT_REGISTER(monitor::SystemStatus)
 
 }  // namespace bridge
 }  // namespace apollo

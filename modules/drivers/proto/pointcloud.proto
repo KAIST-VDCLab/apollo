@@ -19,4 +19,8 @@ message PointCloud {
   optional double measurement_time = 5;
   optional uint32 width = 6;
   optional uint32 height = 7;
+  optional float max_x = 8;
+  optional float max_y = 9;
+  optional float min_x = 10;
+  optional float min_y = 11;
 }

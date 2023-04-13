@@ -11,15 +11,39 @@ cyber_modules {
   }
 }
 cyber_modules {
+  key: "Bridge Odom"
+  value: {
+    dag_files: "/apollo/modules/bridge/dag/bridge_sender_localization.dag"
+  }
+}
+cyber_modules {
+  key: "Bridge Monitor"
+  value: {
+    dag_files: "/apollo/modules/bridge/dag/bridge_sender_modules.dag"
+  }
+}
+cyber_modules {
   key: "Traffic Light"
   value: {
     dag_files: "/apollo/modules/bridge/dag/bridge_receiver_traffic_light.dag"
   }
 }
 cyber_modules {
+  key: "Lat-Lon"
+  value: {
+    dag_files: "/apollo/modules/control/dag/lateral_longitudinal_module.dag"
+  }
+}
+cyber_modules {
   key: "Control"
   value: {
     dag_files: "/apollo/modules/control/dag/control.dag"
+  }
+}
+cyber_modules {
+  key: "MPC"
+  value: {
+    dag_files: "/apollo/modules/control/dag/mpc_module.dag"
   }
 }
 cyber_modules {
@@ -112,7 +136,7 @@ monitored_components {
   key: "CAN-FD"
   value: {
     channel {
-      name: "/apollo/control"
+      name: "/apollo/canbus/chassis"
     }
   }
 }
@@ -128,7 +152,7 @@ monitored_components {
   key: "Localization"
   value: {
     channel {
-      name: "/apollo/sensor/gnss/ins_stat"
+      name: "/apollo/localization/pose"
     }
   }
 }

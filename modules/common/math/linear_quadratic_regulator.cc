@@ -17,6 +17,7 @@
 #include <limits>
 
 #include "Eigen/Dense"
+#include <iostream>
 
 #include "cyber/common/log.h"
 #include "modules/common/math/linear_quadratic_regulator.h"
@@ -53,6 +54,7 @@ void SolveLQRProblem(const Matrix &A, const Matrix &B, const Matrix &Q,
         (AT * P * B + M) * (R + BT * P * B).inverse() * (BT * P * A + MT) + Q;
     // check the difference between P and P_next
     diff = fabs((P_next - P).maxCoeff());
+    //std::cout << "diff --> " << diff << std::endl;
     P = P_next;
   }
 

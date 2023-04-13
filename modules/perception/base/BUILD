@@ -100,6 +100,7 @@ cc_test(
     name = "camera_test",
     size = "small",
     srcs = ["camera_test.cc"],
+    linkopts = ["-lm"],
     deps = [
         ":camera",
         "@com_google_googletest//:gtest_main",
@@ -217,6 +218,7 @@ cc_library(
         "//modules/common/proto:geometry_cc_proto",
         "//modules/common/proto:header_cc_proto",
         "//modules/common/proto:pnc_point_cc_proto",
+        "//modules/common/util:eigen_defs",
         "//modules/map/proto:map_geometry_cc_proto",
         "//modules/map/proto:map_id_cc_proto",
         "//modules/map/proto:map_lane_cc_proto",
@@ -312,6 +314,7 @@ cc_library(
     hdrs = ["point_cloud.h"],
     deps = [
         ":point",
+        "//modules/common/util:eigen_defs",
         "@eigen",
     ],
 )

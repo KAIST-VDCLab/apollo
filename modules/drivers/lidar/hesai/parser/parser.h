@@ -43,6 +43,7 @@ class Parser {
          const Config& conf);
   virtual ~Parser();
   void Parse(const uint8_t* data, int size, bool* is_end);
+  int Parse_vdc(const uint8_t* data, int size, bool* is_end);
   bool Parse(const std::shared_ptr<HesaiScan>& scan);
   bool Init();
 
@@ -54,6 +55,7 @@ class Parser {
   bool LoadCalibration(const std::string& content);
   bool LoadCalibration(const char* path_file);
   void PublishRawPointCloud(int ret = -1);
+  int PublishRawPointCloud_vdc(int ret = -1);
 
   bool inited_ = false;
   void Stop();

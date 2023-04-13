@@ -16,5 +16,5 @@ transform:
     x: 0
     y: 0
     z: 1
-    w: 0.001
+    w: 0
 child_frame_id: world
