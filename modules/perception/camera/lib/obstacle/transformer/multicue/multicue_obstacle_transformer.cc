@@ -115,9 +115,8 @@ bool MultiCueObstacleTransformer::Process(DataFrame *data_frame) {
 }
 
 void MultiCueObstacleTransformer::SetObjMapperOptions(
-    base::ObjectPtr obj, const Eigen::Matrix3f &camera_k_matrix,
-    int width_image, int height_image, ObjMapperOptions *obj_mapper_options,
-    float *theta_ray) {
+    base::ObjectPtr obj, Eigen::Matrix3f camera_k_matrix, int width_image,
+    int height_image, ObjMapperOptions *obj_mapper_options, float *theta_ray) {
   // prepare bbox2d
   float bbox2d[4] = {
       obj->camera_supplement.box.xmin, obj->camera_supplement.box.ymin,
@@ -154,12 +153,12 @@ void MultiCueObstacleTransformer::SetObjMapperOptions(
   }
 
   memcpy(obj_mapper_options->bbox, bbox2d, sizeof(float) * 4);
+  memcpy(obj_mapper_options->hwl, dimension_hwl, sizeof(float) * 3);
   obj_mapper_options->ry = rotation_y;
   obj_mapper_options->is_veh = (obj->type == base::ObjectType::VEHICLE);
   obj_mapper_options->check_dimension = multicue_param_.check_dimension();
   obj_mapper_options->type_min_vol_index =
       MatchTemplates(sub_type, dimension_hwl);
-  memcpy(obj_mapper_options->hwl, dimension_hwl, sizeof(float) * 3);
 
   ADEBUG << "#2D-to-3D for one obj:";
   ADEBUG << "Obj pred ry:" << rotation_y;
@@ -241,8 +240,7 @@ int MultiCueObstacleTransformer::MatchTemplates(base::ObjectSubType sub_type,
 
 void MultiCueObstacleTransformer::FillResults(
     float object_center[3], float dimension_hwl[3], float rotation_y,
-    const Eigen::Affine3d &camera2world_pose, float theta_ray,
-    base::ObjectPtr obj) {
+    Eigen::Affine3d camera2world_pose, float theta_ray, base::ObjectPtr obj) {
   if (obj == nullptr) {
     return;
   }

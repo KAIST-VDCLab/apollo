@@ -535,10 +535,10 @@ class Renderer {
     if (removeOldMap) {
       this.map.removeAllElements(this.scene);
     }
-    this.map.appendMapData(newData, this.coordinates, this.scene);
-    if (newData.parkingSpace) {
+    const extraInfo = this.map.appendMapData(newData, this.coordinates, this.scene);
+    if (newData.parkingSpace && !_.isEmpty(extraInfo[0])) {
       this.routingEditor.setParkingSpaceInfo(
-        newData.parkingSpace, this.coordinates
+        newData.parkingSpace, extraInfo[0], this.coordinates, this.scene
       );
     }
   }

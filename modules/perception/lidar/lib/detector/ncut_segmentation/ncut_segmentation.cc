@@ -32,6 +32,7 @@ namespace lidar {
 
 using apollo::cyber::common::GetAbsolutePath;
 using apollo::cyber::common::GetProtoFromFile;
+using Eigen::MatrixXf;
 
 bool NCutSegmentation::Init(const LidarDetectorInitOptions& options) {
   std::string param_file;

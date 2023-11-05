@@ -127,6 +127,8 @@ class NovatelParser : public Parser {
 
   bool HandleCorrImuData(const novatel::CorrImuData* imu);
 
+  bool HandleCorrImus(const novatel::CorrImus* imu);
+
   bool HandleInsCov(const novatel::InsCov* cov);
 
   bool HandleInsPva(const novatel::InsPva* pva);
@@ -168,7 +170,9 @@ class NovatelParser : public Parser {
 
   size_t total_length_ = 0;
 
-  config::ImuType imu_type_ = config::ImuType::ADIS16488;
+  // KYS: 0818: Correct IMU Type
+  //config::ImuType imu_type_ = config::ImuType::ADIS16488;
+  config::ImuType imu_type_ = config::ImuType::G320N;
 
   // -1 is an unused value.
   novatel::SolutionStatus solution_status_ =
@@ -368,6 +372,18 @@ Parser::MessageType NovatelParser::PrepareMessage(MessagePtr* message_ptr) {
       }
 
       if (HandleCorrImuData(reinterpret_cast<novatel::CorrImuData*>(message))) {
+        *message_ptr = &ins_;
+        return MessageType::INS;
+      }
+      break;
+
+    case novatel::CORRIMUS:
+      if (message_length != sizeof(novatel::CorrImus)) {
+        AERROR << "Incorrect message_length";
+        break;
+      }
+
+      if (HandleCorrImus(reinterpret_cast<novatel::CorrImus*>(message))) {
         *message_ptr = &ins_;
         return MessageType::INS;
       }
@@ -650,6 +666,26 @@ bool NovatelParser::HandleCorrImuData(const novatel::CorrImuData* imu) {
     ins_.set_measurement_time(seconds);
     return false;
   }
+
+  ins_.mutable_header()->set_timestamp_sec(cyber::Time::Now().ToSecond());
+  return true;
+}
+
+bool NovatelParser::HandleCorrImus(const novatel::CorrImus* imu) {
+  rfu_to_flu(imu->x_velocity_change * 100.0f / imu->imu_data_count,
+             imu->y_velocity_change * 100.0f / imu->imu_data_count,
+             imu->z_velocity_change * 100.0f / imu->imu_data_count,
+             ins_.mutable_linear_acceleration());
+  rfu_to_flu(imu->x_angle_change * 100.0f / imu->imu_data_count,
+             imu->y_angle_change * 100.0f / imu->imu_data_count,
+             imu->z_angle_change * 100.0f / imu->imu_data_count,
+             ins_.mutable_angular_velocity());
+
+  // double seconds = imu->gps_week * SECONDS_PER_WEEK + imu->gps_seconds;
+  // if (ins_.measurement_time() != seconds) {
+  //   ins_.set_measurement_time(seconds);
+  //   return false;
+  // }
 
   ins_.mutable_header()->set_timestamp_sec(cyber::Time::Now().ToSecond());
   return true;

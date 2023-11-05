@@ -29,7 +29,9 @@ namespace apollo {
 namespace perception {
 namespace base {
 
-struct Frame {
+struct alignas(16) Frame {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   Frame() { sensor2world_pose.setIdentity(); }
 
   void Reset() {
@@ -53,8 +55,6 @@ struct Frame {
   RadarFrameSupplement radar_frame_supplement;
   CameraFrameSupplement camera_frame_supplement;
   UltrasonicFrameSupplement ultrasonic_frame_supplement;
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 typedef std::shared_ptr<Frame> FramePtr;

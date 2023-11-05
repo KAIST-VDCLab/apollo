@@ -58,6 +58,7 @@ enum MessageId : uint16_t {
   RANGE = 43,
   HEADING = 971,
   IMURATECORRIMUS = 1362,
+  CORRIMUS = 2264,
 };
 
 // Every binary message has 32-bit CRC performed on all data including the
@@ -377,6 +378,24 @@ struct CorrImuData {
   double z_velocity_change;  // change in velocity along z axis in m/s
 };
 static_assert(sizeof(CorrImuData) == 60, "Incorrect size of CorrImuData");
+
+// IMU data corrected for gravity, the earth's rotation and estimated sensor
+// errors.
+struct CorrImus {
+  uint32_t imu_data_count;
+  // double gps_seconds;  // seconds of week
+  // All the measurements are in the SPAN computational frame: right, forward,
+  // up.
+  double x_angle_change;     // change in angle around x axis in radians
+  double y_angle_change;     // change in angle around y axis in radians
+  double z_angle_change;     // change in angle around z axis in radians
+  double x_velocity_change;  // change in velocity along x axis in m/s
+  double y_velocity_change;  // change in velocity along y axis in m/s
+  double z_velocity_change;  // change in velocity along z axis in m/s
+  float reserved_1;
+  uint32_t reserved_2;
+};
+static_assert(sizeof(CorrImus) == 60, "Incorrect size of CorrImus");
 
 struct InsCov {
   uint32_t gps_week;

@@ -17,10 +17,8 @@
 
 #include <algorithm>
 #include <limits>
-#include "Eigen/Dense"
-#include "opencv2/opencv.hpp"
-
 #include "cyber/common/log.h"
+#include "opencv2/opencv.hpp"
 
 namespace apollo {
 namespace perception {

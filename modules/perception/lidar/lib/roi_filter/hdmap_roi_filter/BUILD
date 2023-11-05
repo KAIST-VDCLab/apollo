@@ -62,7 +62,6 @@ cc_library(
     name = "polygon_scan_cvter",
     hdrs = ["polygon_scan_cvter.h"],
     deps = [
-        "//modules/common/util:util_tool",
         "//modules/perception/lidar/common:lidar_log",
         "@eigen",
     ],

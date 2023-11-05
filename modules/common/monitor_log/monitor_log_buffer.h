@@ -88,6 +88,11 @@ class MonitorLogBuffer {
   REG_MSG_TYPE(FATAL);
 
   /**
+   * @brief record a SCHOOL Zone type message
+   */
+  REG_MSG_TYPE(SCHOOL);
+
+  /**
    * @brief Add monitor message with MonitorMessageItem::LogLevel
    * @param log_level defined in modules/common/monitor/proto/monitor.proto
    * @param msg the string to send to monitor

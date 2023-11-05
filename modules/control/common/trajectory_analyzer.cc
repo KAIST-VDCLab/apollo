@@ -193,6 +193,9 @@ TrajectoryPoint TrajectoryAnalyzer::QueryNearestPointByPosition(
       index_min = i;
     }
   }
+  if (index_min + 10 < trajectory_points_.size()){
+    index_min += 10;
+  }
   return trajectory_points_[index_min];
 }
 

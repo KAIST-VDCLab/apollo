@@ -18,8 +18,6 @@
 #include <set>
 #include <string>
 #include <vector>
-
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/tool/benchmark/lidar/util/object.h"
 #include "modules/perception/tool/benchmark/lidar/util/types.h"
 
@@ -28,10 +26,6 @@ namespace perception {
 namespace benchmark {
 
 class Frame : protected SensorObjects {
- public:
-  template <class EigenType>
-  using EigenVector = apollo::common::EigenVector<EigenType>;
-
  public:
   Frame() : SensorObjects() { type = VELODYNE_64; }
 
@@ -54,12 +48,12 @@ class Frame : protected SensorObjects {
     return gt_objects;
   }
 
-  inline const EigenVector<EigenVector<Eigen::Vector3d>>&
+  inline const std::vector<std::vector<Eigen::Vector3d>>&
   get_objects_box_vertices() const {
     return objects_box_vertices;
   }
 
-  inline const EigenVector<EigenVector<Eigen::Vector3d>>&
+  inline const std::vector<std::vector<Eigen::Vector3d>>&
   get_gt_objects_box_vertices() const {
     return gt_objects_box_vertices;
   }

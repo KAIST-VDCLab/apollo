@@ -181,7 +181,6 @@ message PathReferenceDeciderConfig {
 
 message PathReuseDeciderConfig {
   optional bool reuse_path = 1;
-  optional uint32 short_path_threshold = 2 [default = 60];
 }
 
 //////////////////////////////////
@@ -220,7 +219,11 @@ message PiecewiseJerkNonlinearSpeedOptimizerConfig {
 message PiecewiseJerkPathOptimizerConfig {
   optional PiecewiseJerkPathWeights default_path_config = 1;
   optional PiecewiseJerkPathWeights lane_change_path_config = 2;
-  optional double path_reference_l_weight = 3 [default = 0.0];
+  optional PiecewiseJerkPathWeights left_lane_change_path_config = 3;
+  optional PiecewiseJerkPathWeights right_lane_change_path_config = 4;
+  optional PiecewiseJerkPathWeights low_left_lane_change_path_config = 5;
+  optional PiecewiseJerkPathWeights low_right_lane_change_path_config = 6;
+  optional double path_reference_l_weight = 7 [default = 0.0];
 }
 
 message PiecewiseJerkPathWeights {

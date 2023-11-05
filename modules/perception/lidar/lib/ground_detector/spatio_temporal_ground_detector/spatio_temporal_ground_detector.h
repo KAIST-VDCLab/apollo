@@ -31,9 +31,6 @@ namespace lidar {
 
 class SpatioTemporalGroundDetector : public BaseGroundDetector {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
- public:
   SpatioTemporalGroundDetector() = default;
   ~SpatioTemporalGroundDetector() {
     if (pfdetector_ != nullptr) {

@@ -13,7 +13,6 @@ import { ScenarioCertificateInvalid, ScenarioNoCertificate }
   from './ScenarioNoCertificate';
 import RemoteResourseItem from './RemoteResourseItem';
 import VehicleListItem from './VehicleListItem';
-import V2xList from './V2xList';
 
 const RadioGroup = Radio.Group;
 
@@ -42,10 +41,6 @@ export default class DataProfile extends React.Component {
         {
           title: 'Vehicle Profiles',
           key: 'vehicleProfiles',
-        },
-        {
-          title: 'v2x Profiles',
-          key: 'v2xProfiles',
         },
       ],
     };
@@ -180,9 +175,6 @@ export default class DataProfile extends React.Component {
         }
     </div>);
   };
-
-  // 渲染v2x tab
-  renderV2xProfilesList = () => <V2xList />;
 
   render() {
 
@@ -324,7 +316,6 @@ export default class DataProfile extends React.Component {
             {currentKey === 'dynamicModel' && this.renderDynamicModelList()}
             {currentKey === 'recordProfiles' && this.renderRecordProfilesList()}
             {currentKey === 'vehicleProfiles' && this.renderVehicleProfilesList()}
-            {currentKey === 'v2xProfiles' && this.renderV2xProfilesList()}
           </div>
         </div>
       </div>

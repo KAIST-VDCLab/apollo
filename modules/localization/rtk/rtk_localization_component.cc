@@ -16,13 +16,84 @@
 
 #include "modules/localization/rtk/rtk_localization_component.h"
 #include "cyber/time/clock.h"
+#include "cyber/time/rate.h"
+
+using apollo::cyber::Rate;
+Rate rate(50.0);
+
+bool TIME_FLAG = true;
+double time_reference = 0.0;
+double localization_timestamp = 0.0;
+
+bool Me_TIME_FLAG = true;
+double mes_time_reference =0.0;
+double localization_mes_timestamp = 0.0;
 
 namespace apollo {
 namespace localization {
 
-RTKLocalizationComponent::RTKLocalizationComponent()
-    : localization_(new RTKLocalization()) {}
+namespace {
 
+std::string GetLogFileName() {
+  time_t raw_time;
+  char name_buffer[80];
+  std::time(&raw_time);
+  std::tm time_tm;
+  localtime_r(&raw_time, &time_tm);
+  strftime(name_buffer, 80, "/tmp/localization_log_%F_%H%M%S.csv",
+           &time_tm);
+  return std::string(name_buffer);
+}
+
+void WriteHeaders(std::ofstream &file_stream) {
+  file_stream << "time,"
+              << "mes_time,"
+              << "localization_x,"
+              << "localization_y,"
+              << "localization_z,"
+              << "heading,"
+              << "angular_velocity_x,"
+              << "angular_velocity_y,"
+              << "angular_velocity_z," << std::endl;
+}
+}  // namespace
+
+void RTKLocalizationComponent::ProcessLogs(const LocalizationEstimate &localization) {
+  const std::string log_str = absl::StrCat(
+    localization_timestamp, ",",
+    localization_mes_timestamp, ",",
+    localization.pose().position().x() - 302590, ",",
+    localization.pose().position().y() - 4124220, ",",
+    localization.pose().position().z(), ",",
+    localization.pose().heading(), ",",
+    localization.pose().angular_velocity().x(), ",",
+    localization.pose().angular_velocity().y(), ",",
+    localization.pose().angular_velocity().z()
+  );
+  if (1) {
+    localization_log_file_ << log_str << std::endl;
+  }
+}
+
+RTKLocalizationComponent::RTKLocalizationComponent()
+    : localization_(new RTKLocalization()) 
+    {
+      if(1){
+        localization_log_file_.open(GetLogFileName());
+        localization_log_file_ << std::fixed;
+        localization_log_file_ << std::setprecision(10);
+        WriteHeaders(localization_log_file_);
+      }
+    }
+RTKLocalizationComponent::~RTKLocalizationComponent()
+{
+  CloseLogFile();
+}
+void RTKLocalizationComponent::CloseLogFile() {
+  if (1 && localization_log_file_.is_open()) {
+    localization_log_file_.close();
+  }
+}
 bool RTKLocalizationComponent::Init() {
   tf2_broadcaster_.reset(new apollo::transform::TransformBroadcaster(node_));
   if (!InitConfig()) {
@@ -53,9 +124,6 @@ bool RTKLocalizationComponent::InitConfig() {
   gps_status_topic_ = rtk_config.gps_status_topic();
   broadcast_tf_frame_id_ = rtk_config.broadcast_tf_frame_id();
   broadcast_tf_child_frame_id_ = rtk_config.broadcast_tf_child_frame_id();
-  if (rtk_config.has_broadcast_tf_use_system_clock()) {
-    broadcast_tf_use_system_clock = rtk_config.broadcast_tf_use_system_clock();
-  }
 
   localization_->InitConfig(rtk_config);
 
@@ -97,6 +165,7 @@ bool RTKLocalizationComponent::Proc(
     PublishPoseBroadcastTopic(localization);
     PublishPoseBroadcastTF(localization);
     PublishLocalizationStatus(localization_status);
+    // rate.Sleep();
     ADEBUG << "[OnTimer]: Localization message publish success!";
   }
 
@@ -109,12 +178,7 @@ void RTKLocalizationComponent::PublishPoseBroadcastTF(
   apollo::transform::TransformStamped tf2_msg;
 
   auto mutable_head = tf2_msg.mutable_header();
-  if (!broadcast_tf_use_system_clock) {
-    mutable_head->set_timestamp_sec(localization.measurement_time());
-  } else {
-    mutable_head->set_timestamp_sec(cyber::Time::Now().ToSecond());
-  }
-
+  mutable_head->set_timestamp_sec(localization.measurement_time());
   mutable_head->set_frame_id(broadcast_tf_frame_id_);
   tf2_msg.set_child_frame_id(broadcast_tf_child_frame_id_);
 
@@ -134,6 +198,19 @@ void RTKLocalizationComponent::PublishPoseBroadcastTF(
 
 void RTKLocalizationComponent::PublishPoseBroadcastTopic(
     const LocalizationEstimate& localization) {
+  // std::cout << localization.DebugString() << std::endl;
+    if (TIME_FLAG){
+    time_reference = localization.header().timestamp_sec();
+    TIME_FLAG = false;
+  }
+
+    if (Me_TIME_FLAG){
+    mes_time_reference = localization.measurement_time();
+    Me_TIME_FLAG = false;
+  }
+  localization_timestamp = localization.header().timestamp_sec() - time_reference;
+  localization_mes_timestamp = localization.measurement_time() - mes_time_reference;
+  ProcessLogs(localization);
   localization_talker_->Write(localization);
 }
 

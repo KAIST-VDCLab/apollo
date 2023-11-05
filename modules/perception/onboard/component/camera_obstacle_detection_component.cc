@@ -36,9 +36,7 @@ namespace perception {
 namespace onboard {
 
 using ::apollo::cyber::Clock;
-using apollo::common::EigenMap;
 using apollo::cyber::common::GetAbsolutePath;
-std::atomic<unsigned int> CameraObstacleDetectionComponent::camera_id_(0);
 
 static void fill_lane_msg(const base::LaneLineCubicCurve &curve_coord,
                           apollo::perception::LaneMarker *lane_marker) {
@@ -293,7 +291,6 @@ void CameraObstacleDetectionComponent::OnReceiveImage(
   }
   last_timestamp_ = msg_timestamp;
   ++seq_num_;
-  bool camera_flag = true;
 
   // for e2e lantency statistics
   {
@@ -313,11 +310,6 @@ void CameraObstacleDetectionComponent::OnReceiveImage(
   // prefused msg
   std::shared_ptr<SensorFrameMessage> prefused_message(new (std::nothrow)
                                                            SensorFrameMessage);
-  if (enable_output_camera_) {
-    if (output_obstacles_camera_name_ != camera_name) {
-      camera_flag = false;
-    }
-  }
 
   if (InternalProc(message, camera_name, &error_code, prefused_message.get(),
                    out_message.get()) != cyber::SUCC) {
@@ -327,7 +319,7 @@ void CameraObstacleDetectionComponent::OnReceiveImage(
       AERROR << "MakeProtobufMsg failed";
       return;
     }
-    if (output_final_obstacles_ && camera_flag) {
+    if (output_final_obstacles_) {
       writer_->Write(out_message);
     }
     return;
@@ -337,7 +329,7 @@ void CameraObstacleDetectionComponent::OnReceiveImage(
   AINFO << "send out prefused msg, ts: " << msg_timestamp
         << "ret: " << send_sensorframe_ret;
   // Send output msg
-  if (output_final_obstacles_ && camera_flag) {
+  if (output_final_obstacles_) {
     writer_->Write(out_message);
   }
   // for e2e lantency statistics
@@ -364,9 +356,8 @@ int CameraObstacleDetectionComponent::InitConfig() {
   std::string camera_names_str = fusion_camera_detection_param.camera_names();
   boost::algorithm::split(camera_names_, camera_names_str,
                           boost::algorithm::is_any_of(","));
-  camera_size_ = fusion_camera_detection_param.camera_size();
-  if (camera_names_.size() != camera_size_) {
-    AERROR << "invalid camera_names_.size(): " << camera_names_.size();
+  if (camera_names_.size() != 2) {
+    AERROR << "Now CameraObstacleDetectionComponent only support 2 cameras";
     return cyber::FAIL;
   }
 
@@ -432,10 +423,6 @@ int CameraObstacleDetectionComponent::InitConfig() {
 
   cipv_name_ = fusion_camera_detection_param.cipv();
 
-  output_obstacles_camera_name_ =
-      fusion_camera_detection_param.output_obstacles_camera_name();
-  enable_output_camera_ = fusion_camera_detection_param.enable_output_camera();
-
   std::string format_str = R"(
       CameraObstacleDetectionComponent InitConfig success
       camera_names:    %s, %s
@@ -478,7 +465,7 @@ int CameraObstacleDetectionComponent::InitConfig() {
 }
 
 int CameraObstacleDetectionComponent::InitSensorInfo() {
-  if (camera_names_.size() != camera_size_) {
+  if (camera_names_.size() != 2) {
     AERROR << "invalid camera_names_.size(): " << camera_names_.size();
     return cyber::FAIL;
   }
@@ -539,7 +526,7 @@ int CameraObstacleDetectionComponent::InitAlgorithmPlugin() {
 }
 
 int CameraObstacleDetectionComponent::InitCameraFrames() {
-  if (camera_names_.size() != camera_size_) {
+  if (camera_names_.size() != 2) {
     AERROR << "invalid camera_names_.size(): " << camera_names_.size();
     return cyber::FAIL;
   }
@@ -622,17 +609,18 @@ int CameraObstacleDetectionComponent::InitProjectMatrix() {
 }
 
 int CameraObstacleDetectionComponent::InitCameraListeners() {
-  const std::string &camera_name = camera_names_[camera_id_];
-  const std::string &channel_name = input_camera_channel_names_[camera_id_];
-  const std::string &listener_name = camera_name + "_fusion_camera_listener";
-  AINFO << "listener name: " << listener_name;
+  for (size_t i = 0; i < camera_names_.size(); ++i) {
+    const std::string &camera_name = camera_names_[i];
+    const std::string &channel_name = input_camera_channel_names_[i];
+    const std::string &listener_name = camera_name + "_fusion_camera_listener";
+    AINFO << "listener name: " << listener_name;
 
-  typedef std::shared_ptr<apollo::drivers::Image> ImageMsgType;
-  std::function<void(const ImageMsgType &)> camera_callback =
-      std::bind(&CameraObstacleDetectionComponent::OnReceiveImage, this,
-                std::placeholders::_1, camera_name);
-  auto camera_reader = node_->CreateReader(channel_name, camera_callback);
-  ++camera_id_;
+    typedef std::shared_ptr<apollo::drivers::Image> ImageMsgType;
+    std::function<void(const ImageMsgType &)> camera_callback =
+        std::bind(&CameraObstacleDetectionComponent::OnReceiveImage, this,
+                  std::placeholders::_1, camera_name);
+    auto camera_reader = node_->CreateReader(channel_name, camera_callback);
+  }
   return cyber::SUCC;
 }
 

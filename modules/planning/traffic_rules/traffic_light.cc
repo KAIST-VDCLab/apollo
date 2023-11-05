@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
+
 #include "modules/common/util/util.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/pnc_map/path.h"
@@ -31,7 +33,9 @@
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/util/common.h"
 #include "modules/planning/common/util/util.h"
-#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
+
+int traffic_protected_before_traffic_rules = 1;
+int traffic_rule_timer = 0;
 
 namespace apollo {
 namespace planning {
@@ -59,8 +63,8 @@ void TrafficLight::MakeDecisions(Frame* const frame,
     return;
   }
 
-  const auto& traffic_light_status =
-      injector_->planning_context()->planning_status().traffic_light();
+  // const auto& traffic_light_status =
+  //     injector_->planning_context()->planning_status().traffic_light();
 
   const double adc_front_edge_s = reference_line_info->AdcSlBoundary().end_s();
   const double adc_back_edge_s = reference_line_info->AdcSlBoundary().start_s();
@@ -82,17 +86,17 @@ void TrafficLight::MakeDecisions(Frame* const frame,
     }
 
     // check if traffic-light-stop already finished, set by scenario/stage
-    bool traffic_light_done = false;
-    for (const auto& done_traffic_light_overlap_id :
-         traffic_light_status.done_traffic_light_overlap_id()) {
-      if (traffic_light_overlap.object_id == done_traffic_light_overlap_id) {
-        traffic_light_done = true;
-        break;
-      }
-    }
-    if (traffic_light_done) {
-      continue;
-    }
+    // bool traffic_light_done = false;
+    // for (const auto& done_traffic_light_overlap_id :
+    //      traffic_light_status.done_traffic_light_overlap_id()) {
+    //   if (traffic_light_overlap.object_id == done_traffic_light_overlap_id) {
+    //     traffic_light_done = true;
+    //     break;
+    //   }
+    // }
+    // if (traffic_light_done) {
+    //   continue;
+    // }
 
     // work around incorrect s-projection along round routing
     static constexpr double kSDiscrepanceTolerance = 10.0;
@@ -117,6 +121,8 @@ void TrafficLight::MakeDecisions(Frame* const frame,
       continue;
     }
 
+    // std::cout << "traffic_light_overlap.object_id : " << traffic_light_overlap.object_id << std::endl;
+    // std::cout << "frame->GetSignal(traffic_light_overlap.object_id).color() : " <<frame->GetSignal(traffic_light_overlap.object_id).color() << std::endl;
     auto signal_color =
         frame->GetSignal(traffic_light_overlap.object_id).color();
     const double stop_deceleration = util::GetADCStopDeceleration(
@@ -135,8 +141,87 @@ void TrafficLight::MakeDecisions(Frame* const frame,
     signal_debug->set_light_id(traffic_light_overlap.object_id);
     signal_debug->set_light_stop_s(traffic_light_overlap.start_s);
 
-    if (signal_color == perception::TrafficLight::GREEN) {
-      continue;
+    // std::cout << injector_->planning_context()
+    //               ->planning_status()
+    //               .scenario()
+    //               .scenario_type() << std::endl;
+
+    // std::cout<< "signal color : " << signal_color << std::endl;
+
+    if (frame->vehicle_state().linear_velocity() > 3.0) {
+      traffic_rule_timer = 0;
+    }
+
+    if (injector_->planning_context()->planning_status().scenario().scenario_type() == 7) {
+      // std::cout<< "Here1" << std::endl;
+      if (signal_color == perception::TrafficLight::RED_PED) continue;
+      else if(signal_color == perception::TrafficLight::GREEN) continue;
+      else if(signal_color == perception::TrafficLight::GREEN_LEFTTURN) continue;
+    } 
+    else 
+    {
+      // std::cout<< "Here2" << std::endl;
+      if (injector_->planning_context()->planning_status().scenario().scenario_type() == 6 && traffic_protected_before_traffic_rules == 1) {
+        traffic_rule_timer = 0;
+        traffic_protected_before_traffic_rules = 6;
+      }
+      if (injector_->planning_context()->planning_status().scenario().scenario_type() == 0 && traffic_protected_before_traffic_rules == 1) {
+        traffic_rule_timer = 0;
+        traffic_protected_before_traffic_rules = 0;
+      }
+
+      if (injector_->planning_context()->planning_status().scenario().scenario_type() == 5)  // when stop traffic lines
+      {
+        if (signal_color == perception::TrafficLight::GREEN && traffic_protected_before_traffic_rules == 0) 
+        {
+          if (traffic_rule_timer > 300)
+            traffic_protected_before_traffic_rules = 1;
+          traffic_rule_timer++;
+          continue;
+        } 
+        else if (signal_color == perception::TrafficLight::RED_LEFTTURN && traffic_protected_before_traffic_rules == 6) 
+        {
+          if (traffic_rule_timer > 300)
+            traffic_protected_before_traffic_rules = 1;
+          traffic_rule_timer++;
+          continue;
+        } 
+        else if (signal_color == perception::TrafficLight::GREEN_LEFTTURN && traffic_protected_before_traffic_rules == 6) 
+        {
+          if (traffic_rule_timer > 300)
+            traffic_protected_before_traffic_rules = 1;
+          traffic_rule_timer++;
+          continue;
+        } else if (signal_color == perception::TrafficLight::GREEN_LEFTTURN && traffic_protected_before_traffic_rules == 0) 
+        {
+          if (traffic_rule_timer > 300)
+            traffic_protected_before_traffic_rules = 1;
+          traffic_rule_timer++;
+          continue;
+        }
+      } 
+      else if (signal_color == perception::TrafficLight::GREEN && injector_->planning_context()->planning_status().scenario().scenario_type() == 0) {
+        if (traffic_rule_timer > 300)
+          traffic_protected_before_traffic_rules = 1;
+        traffic_rule_timer++;
+        continue;
+      } 
+      else if (signal_color == perception::TrafficLight::RED_LEFTTURN && injector_->planning_context()->planning_status().scenario().scenario_type() == 6) {
+        if (traffic_rule_timer > 300)
+          traffic_protected_before_traffic_rules = 1;
+        traffic_rule_timer++;
+        continue;
+      } else if (signal_color == perception::TrafficLight::GREEN_LEFTTURN && injector_->planning_context()->planning_status().scenario().scenario_type() == 6) {
+        if (traffic_rule_timer > 300)
+          traffic_protected_before_traffic_rules = 1;
+        traffic_rule_timer++;
+        continue;
+      } else if (signal_color == perception::TrafficLight::GREEN_LEFTTURN && injector_->planning_context()->planning_status().scenario().scenario_type() == 0) {
+        if (traffic_rule_timer > 300)
+          traffic_protected_before_traffic_rules = 1;
+        traffic_rule_timer++;
+        continue;
+      }
     }
 
     // Red/Yellow/Unknown: check deceleration
@@ -146,6 +231,7 @@ void TrafficLight::MakeDecisions(Frame* const frame,
     }
 
     // build stop decision
+    //std::cout<< "run stop build" << std::endl;
     ADEBUG << "BuildStopDecision: traffic_light["
            << traffic_light_overlap.object_id << "] start_s["
            << traffic_light_overlap.start_s << "]";

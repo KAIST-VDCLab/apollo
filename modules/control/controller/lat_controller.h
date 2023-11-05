@@ -123,9 +123,17 @@ class LatController : public Controller {
   void LoadLatGainScheduler(const LatControllerConf &lat_controller_conf);
   void LogInitParameters();
   void ProcessLogs(const SimpleLateralDebug *debug,
-                   const canbus::Chassis *chassis);
+                   const canbus::Chassis *chassis,
+                   const localization::LocalizationEstimate *localization);
 
   void CloseLogFile();
+
+  double LPFHeading(const double angular_v);
+
+  // LPF
+  double tau;
+  double ts;
+  double pre_y;
 
   // vehicle
   const ControlConf *control_conf_ = nullptr;
@@ -214,6 +222,18 @@ class LatController : public Controller {
   // MeanFilter heading_rate_filter_;
   common::MeanFilter lateral_error_filter_;
   common::MeanFilter heading_error_filter_;
+
+  // KYS: filter ref_heading, theta of target points
+  common::MeanFilter heading_error_rate_filter_;
+  common::MeanFilter target_point_theta_filter_;
+  common::MeanFilter ref_heading_rate_filter_;
+
+  common::MeanFilter current_x_filter_;
+  common::MeanFilter current_y_filter_;
+  common::MeanFilter current_theta_filter_;
+  common::MeanFilter current_heading_rate_filter_;
+
+  common::MeanFilter steer_angle_filter_;
 
   // Lead/Lag controller
   bool enable_leadlag_ = false;

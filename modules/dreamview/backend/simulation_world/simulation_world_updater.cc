@@ -235,6 +235,8 @@ void SimulationWorldUpdater::RegisterMessageHandlers() {
         auto task = std::make_shared<Task>();
         auto *parking_routing_task = task->mutable_parking_routing_task();
         bool succeed = ConstructParkingRoutingTask(json, parking_routing_task);
+        // For test routing
+        auto routing_request = std::make_shared<RoutingRequest>();
         if (succeed) {
           task->set_task_name("parking_routing_task");
           task->set_task_type(apollo::task_manager::TaskType::PARKING_ROUTING);
@@ -668,6 +670,23 @@ bool SimulationWorldUpdater::ConstructRoutingRequest(
              << json["parkingInfo"].dump();
       return false;
     }
+    if (ContainsKey(json, "cornerPoints")) {
+      auto point_iter = json.find("cornerPoints");
+      auto *points =
+          requested_parking_info->mutable_corner_point()->mutable_point();
+      if (point_iter != json.end() && point_iter->is_array()) {
+        for (size_t i = 0; i < point_iter->size(); ++i) {
+          auto &point = (*point_iter)[i];
+          auto *p = points->Add();
+          if (!ValidateCoordinate(point)) {
+            AERROR << "Failed to add a corner point: invalid corner point.";
+            return false;
+          }
+          p->set_x(static_cast<double>(point["x"]));
+          p->set_y(static_cast<double>(point["y"]));
+        }
+      }
+    }
   }
 
   AINFO << "Constructed RoutingRequest to be sent:\n"
@@ -686,10 +705,20 @@ Json SimulationWorldUpdater::GetConstructRoutingRequestJson(
 
 bool SimulationWorldUpdater::ConstructParkingRoutingTask(
     const Json &json, ParkingRoutingTask *parking_routing_task) {
-  // set parking Space
   auto *routing_request = parking_routing_task->mutable_routing_request();
+  // set parking Space
+  if (!ContainsKey(json, "laneWidth")) {
+    AERROR << "Failed to prepare a parking routing task: "
+           << "lane width not found.";
+    return false;
+  }
   bool succeed = ConstructRoutingRequest(json, routing_request);
-  return succeed;
+  if (succeed) {
+    parking_routing_task->set_lane_width(
+        static_cast<double>(json["laneWidth"]));
+    return true;
+  }
+  return false;
 }
 
 bool SimulationWorldUpdater::ValidateCoordinate(const nlohmann::json &json) {

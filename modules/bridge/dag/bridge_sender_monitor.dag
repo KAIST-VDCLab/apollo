@@ -1,0 +1,14 @@
+module_config {
+    module_library: "/apollo/bazel-bin/modules/bridge/libudp_bridge_sender_component.so"
+    components {
+
+        class_name: "UDPBridgeSenderComponent<monitor::SystemStatus>"
+        config {
+            name: "bridge_sender_SystemStatus"
+            config_file_path: "/apollo/modules/bridge/conf/udp_bridge_sender_monitor.pb.txt"
+            readers {
+              channel: "/apollo/monitor/system_status"
+            }
+      }
+   }
+}

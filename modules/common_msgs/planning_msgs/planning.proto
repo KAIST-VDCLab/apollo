@@ -57,6 +57,12 @@ message ADCTrajectory {
 
   optional double total_path_time = 3;    // in seconds
 
+  // lane departure value
+  optional double lane_diff = 4;
+
+  // front clear distance(FCD)
+  optional double fcd = 5;
+
   optional EStop estop = 6;
 
   optional apollo.planning_internal.Debug debug = 8;

@@ -53,6 +53,7 @@ class TrafficLightUnprotectedRightTurnStageStop : public Stage {
 
  private:
   ScenarioTrafficLightUnprotectedRightTurnConfig scenario_config_;
+  int whatever_stop_ = 0;
 };
 
 }  // namespace traffic_light

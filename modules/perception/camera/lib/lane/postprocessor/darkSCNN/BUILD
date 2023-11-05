@@ -8,7 +8,6 @@ cc_library(
     srcs = ["darkSCNN_lane_postprocessor.cc"],
     hdrs = ["darkSCNN_lane_postprocessor.h"],
     deps = [
-        "//modules/common/util:util_tool",
         "//modules/perception/base",
         "//modules/perception/camera/common",
         "//modules/perception/camera/lib/interface",

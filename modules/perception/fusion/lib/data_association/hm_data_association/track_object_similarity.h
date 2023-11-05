@@ -17,7 +17,6 @@
 
 #include <vector>
 
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/fusion/base/sensor_object.h"
 #include "modules/perception/fusion/lib/data_association/hm_data_association/chi_squared_cdf_1_0.0500_0.999900.h"
 #include "modules/perception/fusion/lib/data_association/hm_data_association/chi_squared_cdf_2_0.0500_0.999900.h"
@@ -27,8 +26,6 @@
 namespace apollo {
 namespace perception {
 namespace fusion {
-
-using apollo::common::EigenVector;
 
 struct XSimilarityParams {
   float welsh_loss_thresh_ = 0.5f;
@@ -102,11 +99,11 @@ double ComputeRadarCameraYSimilarity(const double velo_ct_y,
 double ComputeRadarCameraHSimilarity(
     const SensorObjectConstPtr& radar, const SensorObjectConstPtr& camera,
     const double size_y,
-    const EigenVector<Eigen::Vector2d>& radar_box2d_vertices,
+    const std::vector<Eigen::Vector2d>& radar_box2d_vertices,
     const HSimilarityParams& params);
 double ComputeRadarCameraWSimilarity(
     const SensorObjectConstPtr& radar, const double width, const double size_x,
-    const EigenVector<Eigen::Vector2d>& radar_box2d_vertices,
+    const std::vector<Eigen::Vector2d>& radar_box2d_vertices,
     const WSimilarityParams& params);
 double ComputeRadarCameraLocSimilarity(const Eigen::Vector3d& radar_ct,
                                        const SensorObjectConstPtr& camera,

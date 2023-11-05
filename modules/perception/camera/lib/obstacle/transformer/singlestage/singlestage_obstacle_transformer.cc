@@ -143,8 +143,7 @@ int SingleStageObstacleTransformer::MatchTemplates(
 
 void SingleStageObstacleTransformer::FillResults(
     float object_center[3], float dimension_hwl[3], float rotation_y,
-    const Eigen::Affine3d &camera2world_pose, float theta_ray,
-    base::ObjectPtr obj) {
+    Eigen::Affine3d camera2world_pose, float theta_ray, base::ObjectPtr obj) {
   if (obj == nullptr) {
     return;
   }

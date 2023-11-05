@@ -50,6 +50,7 @@ using apollo::common::Status;
 using apollo::common::TrajectoryPoint;
 using apollo::common::util::PointFactory;
 using apollo::cyber::Clock;
+using apollo::common::VehicleSignal;
 
 namespace {
 constexpr double kPathOptimizationFallbackCost = 2e4;
@@ -99,6 +100,13 @@ Stage::StageStatus LaneFollowStage::Process(
 
   unsigned int count = 0;
 
+  auto prev_status = injector_->planning_context()
+                          ->mutable_planning_status()
+                          ->mutable_change_lane();
+
+  bool is_approach = false;
+  double target_lane_end_l;
+
   for (auto& reference_line_info : *frame->mutable_reference_line_info()) {
     // TODO(SHU): need refactor
     if (count++ == frame->mutable_reference_line_info()->size()) {
@@ -112,17 +120,29 @@ Stage::StageStatus LaneFollowStage::Process(
       break;
     }
 
+    std::cout << "end l : " << reference_line_info.AdcSlBoundary().end_l() << "\n";
+
     auto cur_status =
         PlanOnReferenceLine(planning_start_point, frame, &reference_line_info);
-
+    
     if (cur_status.ok()) {
       if (reference_line_info.IsChangeLanePath()) {
         ADEBUG << "reference line is lane change ref.";
         ADEBUG << "FLAGS_enable_smarter_lane_change: "
                << FLAGS_enable_smarter_lane_change;
-        if (reference_line_info.Cost() < kStraightForwardLineCost &&
+
+        const double now = Clock::NowInSeconds();
+        double time_delay = injector_->vehicle_state()->linear_velocity() > 30.0 ? 2.0 : 3.0;
+        is_approach = (now - prev_status->timestamp() < time_delay);
+        target_lane_end_l = reference_line_info.AdcSlBoundary().end_l();
+
+        // std::cout << "lane change time diff" << now - prev_status->timestamp() << "\n";
+        std::cout << "is approach: " << is_approach << "\n";
+        std::cout << "this ref line is lane change \n";
+
+        if ((reference_line_info.Cost() < kStraightForwardLineCost) &&
             (LaneChangeDecider::IsClearToChangeLane(&reference_line_info) ||
-             FLAGS_enable_smarter_lane_change)) {
+             FLAGS_enable_smarter_lane_change) && !is_approach && prev_status->status() != 3) {
           // If the path and speed optimization succeed on target lane while
           // under smart lane-change or IsClearToChangeLane under older version
           has_drivable_reference_line = true;
@@ -130,6 +150,7 @@ Stage::StageStatus LaneFollowStage::Process(
           LaneChangeDecider::UpdatePreparationDistance(
               true, frame, &reference_line_info, injector_->planning_context());
           ADEBUG << "\tclear for lane change";
+
         } else {
           LaneChangeDecider::UpdatePreparationDistance(
               false, frame, &reference_line_info,
@@ -137,13 +158,21 @@ Stage::StageStatus LaneFollowStage::Process(
           reference_line_info.SetDrivable(false);
           ADEBUG << "\tlane change failed";
         }
+        
       } else {
         ADEBUG << "reference line is NOT lane change ref.";
         has_drivable_reference_line = true;
+        std::cout << "this ref line is NOT lane change \n";
+
       }
+
     } else {
       reference_line_info.SetDrivable(false);
     }
+  }
+  
+  for (auto& reference_line_info : *frame->mutable_reference_line_info()) {
+    reference_line_info.SetIsApproachingLaneChange(is_approach, target_lane_end_l);
   }
 
   return has_drivable_reference_line ? StageStatus::RUNNING

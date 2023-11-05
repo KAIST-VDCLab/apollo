@@ -26,8 +26,6 @@ namespace apollo {
 namespace perception {
 namespace camera {
 
-using apollo::common::EigenVector;
-
 void ObstacleReference::Init(const omt::ReferenceParam &ref_param, float width,
                              float height) {
   ref_param_ = ref_param;

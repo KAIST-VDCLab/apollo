@@ -20,7 +20,6 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/base/point.h"
 #include "modules/perception/camera/common/camera_frame.h"
 #include "modules/perception/camera/lib/interface/base_calibration_service.h"
@@ -38,9 +37,6 @@ namespace camera {
 class DarkSCNNLanePostprocessor : public BaseLanePostprocessor {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-  template <class EigenType>
-  using EigenVector = apollo::common::EigenVector<EigenType>;
 
  public:
   DarkSCNNLanePostprocessor() : BaseLanePostprocessor() {}
@@ -62,13 +58,11 @@ class DarkSCNNLanePostprocessor : public BaseLanePostprocessor {
   bool Process3D(const LanePostprocessorOptions& options,
                  CameraFrame* frame) override;
 
-  void SetIm2CarHomography(const Eigen::Matrix3d &homography_im2car) override {
-    Eigen::Matrix3d im2car = homography_im2car;
-    trans_mat_ = im2car.cast<float>();
+  void SetIm2CarHomography(Eigen::Matrix3d homography_im2car) override {
+    trans_mat_ = homography_im2car.cast<float>();
     trans_mat_inv = trans_mat_.inverse();
   }
 
-  // Todo(daohu527): Need define!
   std::vector<std::vector<LanePointInfo>> GetLanelinePointSet();
   std::vector<LanePointInfo> GetAllInferLinePointSet();
 
@@ -116,8 +110,8 @@ class DarkSCNNLanePostprocessor : public BaseLanePostprocessor {
   Eigen::Matrix<float, 3, 3> trans_mat_;
   Eigen::Matrix<float, 3, 3> trans_mat_inv;
   // xy points for the ground plane, uv points for image plane
-  EigenVector<EigenVector<Eigen::Matrix<float, 2, 1>>> xy_points;
-  EigenVector<EigenVector<Eigen::Matrix<float, 2, 1>>> uv_points;
+  std::vector<std::vector<Eigen::Matrix<float, 2, 1>>> xy_points;
+  std::vector<std::vector<Eigen::Matrix<float, 2, 1>>> uv_points;
 };
 
 }  // namespace camera

@@ -18,14 +18,6 @@
 
 #include <vector>
 
-#if defined(__x86_64__)
-#include <smmintrin.h>
-#elif defined(__aarch64__) && defined(__ARM_NEON)
-#include "sse2neon.h" // NOLINT
-#else
-#error "Processor architecture not supported!"
-#endif
-
 #include "modules/perception/common/i_lib/core/i_alloc.h"
 #include "modules/perception/common/i_lib/core/i_blas.h"
 #include "modules/perception/common/i_lib/pc/i_util.h"

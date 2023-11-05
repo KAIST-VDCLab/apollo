@@ -1,0 +1,39 @@
+module_config {
+    module_library: "/apollo/bazel-bin/modules/bridge/libudp_bridge_sender_component.so"
+    components {
+
+        class_name: "UDPBridgeSenderComponent<localization::LocalizationEstimate>"
+        config {
+            name: "bridge_sender_localization"
+            config_file_path: "/apollo/modules/bridge/conf/udp_bridge_sender_localization.pb.txt"
+            readers {
+              channel: "/apollo/localization/pose"
+            }
+      }
+   }
+
+    components {
+
+        class_name: "UDPBridgeSenderComponent<localization::LocalizationStatus>"
+        config {
+            name: "bridge_sender_localization_status"
+            config_file_path: "/apollo/modules/bridge/conf/udp_bridge_sender_localization_status.pb.txt"
+            readers {
+              channel: "/apollo/localization/msf_status"
+            }
+      }
+   }
+
+    components {
+
+        class_name: "UDPBridgeSenderComponent<perception::PerceptionObstacles>"
+        config {
+            name: "bridge_sender_PerceptionObstacles"
+            config_file_path: "/apollo/modules/bridge/conf/udp_bridge_sender_obstacle.pb.txt"
+            readers {
+              channel: "/apollo/perception/obstacles"
+            }
+      }
+   }
+   
+}

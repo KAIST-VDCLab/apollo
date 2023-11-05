@@ -9,7 +9,6 @@ cc_library(
     hdrs = ["common_functions.h"],
     deps = [
         "//cyber",
-        "//modules/common/util:util_tool",
         "//modules/perception/base",
         "@eigen",
     ],

@@ -51,6 +51,13 @@ class ManualTrafficLight final : public apollo::cyber::TimerComponent {
           OnLocalization(localization);
         });
 
+    camera_traffic_reader_ = node_->CreateReader<TrafficLightDetection>(
+        "/kaist/perception/traffic_light",
+        [this](const std::shared_ptr<TrafficLightDetection> &perception_traffic) {
+          ADEBUG << "Received camera traffic data: run OnTraffic callback.";
+          OnTraffic(perception_traffic);
+        });
+
     traffic_light_detection_writer_ =
         node_->CreateWriter<TrafficLightDetection>(
             FLAGS_traffic_light_detection_topic);
@@ -109,7 +116,15 @@ class ManualTrafficLight final : public apollo::cyber::TimerComponent {
                 << ANSI_RESET << "Press 'c' to change" << std::endl
                 << std::endl;
     }
-    CreateTrafficLightDetection(signals, color, &traffic_light_detection);
+    if(has_traffic_)
+    {
+      for (const auto& traffic_light : perception_traffic_.traffic_light()) {
+        TrafficLight::Color detection_Color = traffic_light.color();
+        CreateTrafficLightDetection(signals, detection_Color, &traffic_light_detection);
+      }
+    }
+    else
+      CreateTrafficLightDetection(signals, color, &traffic_light_detection);
     traffic_light_detection_writer_->Write(traffic_light_detection);
     return true;
   }
@@ -198,11 +213,39 @@ class ManualTrafficLight final : public apollo::cyber::TimerComponent {
           is_green_ = !is_green_;
           updated_ = true;
         }
+        if(ch == 'l')
+        {
+          is_left_turn = !is_left_turn;
+          updated_ = true;
+        }
+        if(ch == 'r')
+        {
+          is_red_left_turn = !is_red_left_turn;
+          updated_ = true;
+        }
+        if (ch == 'p') {
+          is_ped_signal = !is_ped_signal;
+          updated_ = true;
+        }
+
         break;
     }
     if (is_green_) {
       return TrafficLight::GREEN;
-    } else {
+    }
+    else if(is_left_turn)
+    {
+      return TrafficLight::GREEN_LEFTTURN;
+    }
+    else if(is_red_left_turn)
+    {
+      return TrafficLight::RED_LEFTTURN;
+    }
+    else if(is_ped_signal)
+    {
+      return TrafficLight::RED_PED;
+    }
+     else {
       return TrafficLight::RED;
     }
   }
@@ -225,17 +268,30 @@ class ManualTrafficLight final : public apollo::cyber::TimerComponent {
     localization_ = *localization;
     has_localization_ = true;
   }
+  void OnTraffic(
+      const std::shared_ptr<TrafficLightDetection> &perception_traffic) {
+    perception_traffic_ = *perception_traffic;
+    has_traffic_ = true;
+  }
 
  private:
   bool is_green_ = false;
+  bool is_left_turn = false;
+  bool is_red_left_turn = false;
+  bool is_ped_signal = false;
   bool updated_ = true;
   bool has_localization_ = false;
+  bool has_traffic_ = false;
   LocalizationEstimate localization_;
+  TrafficLightDetection perception_traffic_;
   std::unordered_set<std::string> prev_traffic_lights_;
   std::shared_ptr<apollo::cyber::Writer<TrafficLightDetection>>
       traffic_light_detection_writer_ = nullptr;
   std::shared_ptr<apollo::cyber::Reader<LocalizationEstimate>>
       localization_reader_ = nullptr;
+  //TODO : sklee
+  std::shared_ptr<apollo::cyber::Reader<TrafficLightDetection>>
+      camera_traffic_reader_ = nullptr;
 };
 
 CYBER_REGISTER_COMPONENT(ManualTrafficLight);

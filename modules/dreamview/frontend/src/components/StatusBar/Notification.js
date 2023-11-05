@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
+import UTTERANCE from 'store/utterance';
 
 import warnIcon from 'assets/images/icons/warning.png';
 import errorIcon from 'assets/images/icons/error.png';
@@ -24,6 +25,10 @@ export default class Notification extends React.Component {
                             || item.logLevel === 'FATAL')
       ? 'alert' : 'warn';
     const icon = levelClass === 'alert' ? errorIcon : warnIcon;
+
+    if (item.logLevel === 'SCHOOL'){
+      UTTERANCE.speakOnce(`Entering the school zone`);
+    }
 
     return (
             <div

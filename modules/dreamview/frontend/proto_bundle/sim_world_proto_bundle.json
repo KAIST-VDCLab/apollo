@@ -2263,6 +2263,13 @@
                   "type": "DualVariableConfig",
                   "id": 2
                 },
+                "trajectorySmoother": {
+                  "type": "TrajectorySmoother",
+                  "id": 7,
+                  "options": {
+                    "default": "USE_WARM_START"
+                  }
+                },
                 "distanceApproachTrajectorySmootherConfig": {
                   "type": "DistanceApproachTrajectorySmootherConfig",
                   "id": 3
@@ -2284,6 +2291,15 @@
                 "plannerOpenSpaceConfig": {
                   "type": "PlannerOpenSpaceConfig",
                   "id": 6
+                }
+              },
+              "nested": {
+                "TrajectorySmoother": {
+                  "values": {
+                    "ITERATIVE_ANCHORING_SMOOTHER": 0,
+                    "DISTANCE_APPROACH": 1,
+                    "USE_WARM_START": 2
+                  }
                 }
               }
             },
@@ -7292,6 +7308,14 @@
                   "type": "double",
                   "id": 3
                 },
+                "laneDiff": {
+                  "type": "double",
+                  "id": 4
+                },
+                "fcd": {
+                  "type": "double",
+                  "id": 5
+                },
                 "estop": {
                   "type": "EStop",
                   "id": 6
@@ -8702,7 +8726,8 @@
                         "INFO": 0,
                         "WARN": 1,
                         "ERROR": 2,
-                        "FATAL": 3
+                        "FATAL": 3,
+                        "SCHOOL": 4
                       }
                     }
                   }
@@ -11498,6 +11523,14 @@
                   "options": {
                     "default": false
                   }
+                },
+                "fcd": {
+                  "type": "double",
+                  "id": 28
+                },
+                "landDiff": {
+                  "type": "double",
+                  "id": 29
                 },
                 "leftTurn": {
                   "type": "bool",
@@ -18506,7 +18539,11 @@
                     "RED": 1,
                     "YELLOW": 2,
                     "GREEN": 3,
-                    "BLACK": 4
+                    "BLACK": 4,
+                    "RED_LEFTTURN": 5,
+                    "GREEN_LEFTTURN": 6,
+                    "RED_PED": 7,
+                    "GREEN_PED": 8
                   }
                 }
               }
@@ -22178,17 +22215,13 @@
             },
             "ParkingRoutingTask": {
               "fields": {
-                "parkingSpaceId": {
-                  "type": "string",
-                  "id": 1
-                },
                 "laneWidth": {
                   "type": "double",
-                  "id": 2
+                  "id": 1
                 },
                 "routingRequest": {
                   "type": "apollo.routing.RoutingRequest",
-                  "id": 3
+                  "id": 2
                 }
               }
             },

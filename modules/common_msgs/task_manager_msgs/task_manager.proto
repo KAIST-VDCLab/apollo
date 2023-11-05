@@ -26,10 +26,8 @@ message CycleRoutingTask {
 }
 
 message ParkingRoutingTask {
-  optional string parking_space_id = 1;
-  // todo@lijin: remove 2,3 after code change
-  optional double lane_width = 2;
-  optional apollo.routing.RoutingRequest routing_request = 3;
+  optional double lane_width = 1;
+  optional apollo.routing.RoutingRequest routing_request = 2;
 }
 
 message ParkGoRoutingTask {

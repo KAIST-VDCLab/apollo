@@ -304,7 +304,7 @@ void ObstacleCameraPerception::SetCameraHeightAndPitch(
 }
 
 void ObstacleCameraPerception::SetIm2CarHomography(
-    const Eigen::Matrix3d &homography_im2car) {
+    Eigen::Matrix3d homography_im2car) {
   if (calibration_service_ == nullptr) {
     AERROR << "Calibraion service is not available";
     return;

@@ -28,6 +28,8 @@ namespace perception {
 namespace lidar {
 
 struct MlfPredict {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   Eigen::VectorXf state;
   base::PolygonDType polygon;
   base::PointDCloud cloud;

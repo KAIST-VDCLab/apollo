@@ -14,7 +14,6 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/base/frame.h"
 #include "modules/perception/common/sensor_manager/sensor_manager.h"
 #include "modules/perception/fusion/base/sensor.h"
@@ -29,8 +28,6 @@
 namespace apollo {
 namespace perception {
 namespace fusion {
-
-using apollo::common::EigenVector;
 
 /*
 TODO(all): not compiling. to be fixed
@@ -196,7 +193,7 @@ TEST(ComputeRadarCameraYSimilarity, test_compute_radar_camera_y_sim) {
 
 TEST(ComputeRadarCameraHSimilarity, test_compute_radar_camera_h_sim) {
   SensorObjectConstPtr sensor_radar_ptr;
-  EigenVector<Eigen::Vector2d> radar_box2d_vertices;
+  std::vector<Eigen::Vector2d> radar_box2d_vertices;
   radar_box2d_vertices.push_back(Eigen::Vector2d(0, 0));
   radar_box2d_vertices.push_back(Eigen::Vector2d(1, 0));
   radar_box2d_vertices.push_back(Eigen::Vector2d(2, 0));
@@ -221,7 +218,7 @@ TEST(ComputeRadarCameraHSimilarity, test_compute_radar_camera_h_sim) {
 }
 
 TEST(ComputeRadarCameraWSimilarity, test_compute_radar_camera_w_sim) {
-  EigenVector<Eigen::Vector2d> radar_box2d_vertices;
+  std::vector<Eigen::Vector2d> radar_box2d_vertices;
   radar_box2d_vertices.push_back(Eigen::Vector2d(0, 0));
   radar_box2d_vertices.push_back(Eigen::Vector2d(100, 100));
   radar_box2d_vertices.push_back(Eigen::Vector2d(0, 0));

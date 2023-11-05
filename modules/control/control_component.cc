@@ -19,6 +19,7 @@
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
 #include "cyber/time/clock.h"
+// #include "cyber/time/rate.h"
 #include "modules/common/adapters/adapter_gflags.h"
 #include "modules/common/latency_recorder/latency_recorder.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
@@ -34,6 +35,8 @@ using apollo::common::VehicleStateProvider;
 using apollo::cyber::Clock;
 using apollo::localization::LocalizationEstimate;
 using apollo::planning::ADCTrajectory;
+// using apollo::cyber::Rate;
+// Rate rate(50.0);
 
 ControlComponent::ControlComponent()
     : monitor_logger_buffer_(common::monitor::MonitorMessageItem::CONTROL) {}
@@ -175,6 +178,7 @@ Status ControlComponent::ProduceControlCommand(
     Status status_ts = CheckTimestamp(local_view_);
     if (!status_ts.ok()) {
       AERROR << "Input messages timeout";
+      estop_ = true;
       // Clear trajectory data to make control stop if no data received again
       // next cycle.
       trajectory_reader_->ClearData();
@@ -287,12 +291,16 @@ bool ControlComponent::Proc() {
     return false;
   }
 
+  // if(latest_chassis_.header().sequence_num() == chassis_msg->header().sequence_num())
+  //   abort(); // _Exit(0);
+
   OnChassis(chassis_msg);
 
   trajectory_reader_->Observe();
   const auto &trajectory_msg = trajectory_reader_->GetLatestObserved();
   if (trajectory_msg == nullptr) {
     AERROR << "planning msg is not ready!";
+    // exit(1);
     return false;
   }
   // Check if new planning data received.
@@ -305,6 +313,7 @@ bool ControlComponent::Proc() {
   const auto &localization_msg = localization_reader_->GetLatestObserved();
   if (localization_msg == nullptr) {
     AERROR << "localization msg is not ready!";
+    // exit(1);
     return false;
   }
   OnLocalization(localization_msg);
@@ -424,7 +433,14 @@ bool ControlComponent::Proc() {
         local_view_.trajectory().header().lidar_timestamp(), start_time,
         end_time);
   }
+  //sklee
+  control_command.set_fcd(local_view_.trajectory().fcd());
+  control_command.set_land_diff(local_view_.trajectory().lane_diff());
+  control_command.set_estop(estop_);
+
   control_cmd_writer_->Write(control_command);
+  //std::cout << "[control_component] estop_ : "<< std::boolalpha << estop_ <<std::endl;
+  // rate.Sleep();
   return true;
 }
 
@@ -465,11 +481,13 @@ Status ControlComponent::CheckTimestamp(const LocalView &local_view) {
     ADEBUG << "Skip input timestamp check by gflags.";
     return Status::OK();
   }
+  //std::cout << "CheckTimestamp!!!!!!!" << std::endl;
   double current_timestamp = Clock::NowInSeconds();
   double localization_diff =
       current_timestamp - local_view.localization().header().timestamp_sec();
   if (localization_diff > (control_conf_.max_localization_miss_num() *
                            control_conf_.localization_period())) {
+    std::cout << "Localization msg lost for " << std::endl;
     AERROR << "Localization msg lost for " << std::setprecision(6)
            << localization_diff << "s";
     monitor_logger_buffer_.ERROR("Localization msg lost");
@@ -480,6 +498,7 @@ Status ControlComponent::CheckTimestamp(const LocalView &local_view) {
       current_timestamp - local_view.chassis().header().timestamp_sec();
   if (chassis_diff >
       (control_conf_.max_chassis_miss_num() * control_conf_.chassis_period())) {
+    std::cout << "Chassis msg lost for " << std::endl;
     AERROR << "Chassis msg lost for " << std::setprecision(6) << chassis_diff
            << "s";
     monitor_logger_buffer_.ERROR("Chassis msg lost");
@@ -490,6 +509,7 @@ Status ControlComponent::CheckTimestamp(const LocalView &local_view) {
       current_timestamp - local_view.trajectory().header().timestamp_sec();
   if (trajectory_diff > (control_conf_.max_planning_miss_num() *
                          control_conf_.trajectory_period())) {
+    std::cout << "Trajectory msg lost for " << std::endl;
     AERROR << "Trajectory msg lost for " << std::setprecision(6)
            << trajectory_diff << "s";
     monitor_logger_buffer_.ERROR("Trajectory msg lost");

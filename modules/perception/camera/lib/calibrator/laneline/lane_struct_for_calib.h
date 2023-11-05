@@ -19,8 +19,6 @@
 
 #include "Eigen/Eigen"
 
-#include "modules/common/util/eigen_defs.h"
-
 namespace apollo {
 namespace perception {
 namespace camera {
@@ -33,7 +31,7 @@ struct VanishingPoint {
 struct LaneLine {
   int type = 0;
   int color = 0;
-  apollo::common::EigenVector<Eigen::Vector2f> lane_point = {};
+  std::vector<Eigen::Vector2f> lane_point = {};
 };
 
 struct CmpLanePointY {

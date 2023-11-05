@@ -41,7 +41,7 @@ DEFINE_string(calibration_table_file,
               "/apollo/modules/control/conf/calibration_table.pb.txt",
               "calibration table file");
 
-DEFINE_bool(enable_csv_debug, false, "True to write out csv debug file.");
+DEFINE_bool(enable_csv_debug, true, "True to write out csv debug file.");
 DEFINE_bool(enable_speed_station_preview, true, "enable speed/station preview");
 
 DEFINE_string(control_node_name, "control", "The control node name in proto");
@@ -117,12 +117,6 @@ DEFINE_bool(
 DEFINE_bool(use_control_submodules, false,
             "use control submodules instead of controller agent");
 
-DEFINE_bool(use_acceleration_lookup_limit, false,
-            "use acceleration lookup limit within vehicle max acceleration");
-
 DEFINE_bool(
-    use_preview_reference_check, true,
-    "use preview refenence acceleration and speed for near the stop stage");
-
-DEFINE_double(steer_cmd_interval, 20.0,
-              "Steer cmd interval of current and previous in percentage.");
+    use_acceleration_lookup_limit, false,
+    "use acceleration lookup limit within vehicle max acceleration for D-KIT");

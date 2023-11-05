@@ -16,6 +16,7 @@
 
 #include "modules/perception/inference/inference_factory.h"
 
+#include "modules/perception/inference/libtorch/torch_det.h"
 #include "modules/perception/inference/libtorch/torch_net.h"
 #include "modules/perception/inference/onnx/libtorch_obstacle_detector.h"
 #include "modules/perception/inference/paddlepaddle/paddle_net.h"
@@ -43,16 +44,11 @@ Inference *CreateInferenceByName(const std::string &name,
   if (name == "RTNet") {
     return new RTNET;
   } else if (name == "RTNetInt8") {
-<<<<<<< HEAD
     return new RTNET8;
   } else if (name == "TorchDet") {
     return new TorchDet(proto_file, weight_file, outputs, inputs);
-=======
-    return new RTNet(proto_file, weight_file, outputs, inputs, model_root);
->>>>>>> upstream/r8.0.0
   } else if (name == "TorchNet") {
-    // PyTorch just have model file, we use proto_file as model file
-    return new TorchNet(proto_file, outputs, inputs);
+    return new TorchNet(proto_file, weight_file, outputs, inputs);
   } else if (name == "Obstacle") {
     return new ObstacleDetector(proto_file, weight_file, outputs, inputs);
   } else if (name == "PaddleNet") {

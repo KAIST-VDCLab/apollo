@@ -1,0 +1,20 @@
+# proj: +proj=utm +zone=50 +ellps=WGS84
+# scale:1.11177
+# (XXX) Manually adjusted
+header:
+  stamp:
+    secs: 0 # 1422601952
+    nsecs: 0 # 288805456
+  seq: 0
+  frame_id: novatel
+transform:
+  translation:
+    x: 0
+    y: 0.6
+    z: 1.085
+  rotation:
+    x: 0
+    y: 0
+    z: 0.7009093 # -0.694658
+    w: 0.7132504 # 0.719339 
+child_frame_id: hesai64

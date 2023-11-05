@@ -67,11 +67,31 @@ common::Status PiecewiseJerkPathOptimizer::Process(
 
   // Choose lane_change_path_config for lane-change cases
   // Otherwise, choose default_path_config for normal path planning
+  // const auto& config = reference_line_info_->IsChangeLanePath()
+  //                          ? config_.piecewise_jerk_path_optimizer_config()
+  //                                .lane_change_path_config()
+  //                          : config_.piecewise_jerk_path_optimizer_config()
+  //                                .default_path_config();
+
   const auto& config = reference_line_info_->IsChangeLanePath()
-                           ? config_.piecewise_jerk_path_optimizer_config()
-                                 .lane_change_path_config()
-                           : config_.piecewise_jerk_path_optimizer_config()
-                                 .default_path_config();
+                        ? (injector_->vehicle_state()->vehicle_state().linear_velocity() < 30.0/3.6
+                          ? (reference_line_info_->Lanes().PreviousAction() == routing::ChangeLaneType::LEFT
+                            ? config_.piecewise_jerk_path_optimizer_config().low_left_lane_change_path_config()
+                            : config_.piecewise_jerk_path_optimizer_config().low_right_lane_change_path_config())
+                          : (reference_line_info_->Lanes().PreviousAction() == routing::ChangeLaneType::LEFT
+                            ? config_.piecewise_jerk_path_optimizer_config().left_lane_change_path_config()
+                            : config_.piecewise_jerk_path_optimizer_config().right_lane_change_path_config())
+                          )
+                        : config_.piecewise_jerk_path_optimizer_config().default_path_config();
+
+  // if (reference_line_info_->IsChangeLanePath()) {
+  //   if (reference_line_info_->Lanes().PreviousAction() == routing::ChangeLaneType::LEFT) {
+  //     config = config_.piecewise_jerk_path_optimizer_config().left_lane_change_path_config();
+  //   }
+  //   else {
+  //     config = config_.piecewise_jerk_path_optimizer_config().right_lane_change_path_config();
+  //   }
+  // }
 
   std::array<double, 5> w = {
       config.l_weight(),
@@ -190,6 +210,12 @@ common::Status PiecewiseJerkPathOptimizer::Process(
       path_data.set_path_label(path_boundary.label());
       path_data.set_blocking_obstacle_id(path_boundary.blocking_obstacle_id());
       candidate_path_data.push_back(std::move(path_data));
+    }
+    else {
+      opt_fail_cnt += 1;
+      std::cout << opt_fail_cnt << " || "
+                << candidate_path_data.size() << "/"
+                << path_boundaries.size() << std::endl;
     }
   }
   if (candidate_path_data.empty()) {
@@ -317,15 +343,15 @@ bool PiecewiseJerkPathOptimizer::OptimizePath(
   if (!success) {
     AERROR << "piecewise jerk path optimizer failed";
     std::stringstream ssm;
-    AERROR << "dl bound" << FLAGS_lateral_derivative_bound_default
-           << " jerk bound" << jerk_bound;
+    AERROR << "dl bound: " << FLAGS_lateral_derivative_bound_default
+           << ", jerk bound: " << jerk_bound;
     for (size_t i = 0; i < lat_boundaries.size(); i++) {
-      ssm << lat_boundaries[i].first << " " << lat_boundaries[i].second << ","
-          << ddl_bounds[i].first << " " << ddl_bounds[i].second << ","
+      ssm << lat_boundaries[i].first << " " << lat_boundaries[i].second << ", "
+          << ddl_bounds[i].first << " " << ddl_bounds[i].second << ", "
           << path_reference_l_ref[i] << std::endl;
     }
-    AERROR << "lat boundary, ddl boundary , path reference" << std::endl
-           << ssm.str();
+    // AERROR << "lat boundary, ddl boundary , path reference" << std::endl
+    //        << ssm.str();
     return false;
   }
 

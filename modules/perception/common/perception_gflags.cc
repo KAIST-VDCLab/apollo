@@ -119,11 +119,11 @@ DEFINE_string(mask_bbox_head_torch_file,
 // lidar_center_point
 DEFINE_string(center_point_model_file,
               "/apollo/modules/perception/production/data/perception/lidar/"
-              "models/detection/center_point_paddle/centerpoint.pdmodel",
+              "models/detection/CenterPoint_paddle/centerpoint.pdmodel",
               "The path of center point model file.");
 DEFINE_string(center_point_params_file,
               "/apollo/modules/perception/production/data/perception/lidar/"
-              "models/detection/center_point_paddle/centerpoint.pdiparams",
+              "models/detection/CenterPoint_paddle/centerpoint.pdiparams",
               "The path of center point params file.");
 DEFINE_bool(use_trt, false, "True if preprocess in CPU mode.");
 DEFINE_int32(trt_precision, 1,
@@ -143,16 +143,14 @@ DEFINE_string(dynamic_shape_file,
               "Path of a dynamic shape file for tensorrt");
 
 // bev petr_v1
-DEFINE_string(
-    bev_model_file,
-    "/apollo/modules/perception/production/data/perception/camera/"
-    "models/yolo_obstacle_detector/PETR_V1_paddle/petr_inference.pdmodel",
-    "The path of bev model file.");
-DEFINE_string(
-    bev_params_file,
-    "/apollo/modules/perception/production/data/perception/camera/"
-    "models/yolo_obstacle_detector/PETR_V1_paddle/petr_inference.pdiparams",
-    "The path of bev params file.");
+DEFINE_string(bev_model_file,
+              "/apollo/modules/perception/production/data/perception/camera/"
+              "models/petr_v1/petr_inference.pdmodel",
+              "The path of bev model file.");
+DEFINE_string(bev_params_file,
+              "/apollo/modules/perception/production/data/perception/camera/"
+              "models/petr_v1/petr_inference.pdiparams",
+              "The path of bev params file.");
 
 // caddn
 DEFINE_string(caddn_model_file,

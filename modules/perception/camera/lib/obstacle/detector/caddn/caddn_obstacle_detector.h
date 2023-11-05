@@ -45,7 +45,6 @@ class CaddnObstacleDetector : public BaseObstacleDetector {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
- public:
   CaddnObstacleDetector() : BaseObstacleDetector() {}
   virtual ~CaddnObstacleDetector() = default;
   bool Init(const StageConfig &stage_config) override;

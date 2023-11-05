@@ -152,9 +152,22 @@ bool PathDecider::MakeStaticObstacleDecision(
 
     const auto frenet_point = frenet_path.GetNearestPoint(sl_boundary);
     const double curr_l = frenet_point.l();
-    double min_nudge_l =
-        half_width +
-        config_.path_decider_config().static_obstacle_buffer() / 2.0;
+
+    /*sklee by 0803 start*/
+    double min_nudge_l = 0;
+    if(obstacle_type_name == "PEDESTRIAN")
+    {
+      min_nudge_l = half_width + 2.0 / 2.0;
+    }
+    else if(obstacle_type_name == "VEHICLE")
+    {
+      min_nudge_l = half_width + 1.2 / 2.0;
+    }
+    else
+    {
+      min_nudge_l = half_width + config_.path_decider_config().static_obstacle_buffer() / 2.0;
+    }
+    /*sklee by 0803 end*/
 
     if (curr_l - lateral_radius > sl_boundary.end_l() ||
         curr_l + lateral_radius < sl_boundary.start_l()) {

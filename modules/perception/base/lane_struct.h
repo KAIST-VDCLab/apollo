@@ -69,7 +69,7 @@ struct EndPoints {
 struct LaneLine {
   LaneLineType type;
   LaneLinePositionType pos_type;
-  // @brief car coordinate system
+  // @brief image coordinate system
   LaneLineCubicCurve curve_car_coord;
   // @brief camera coordinate system
   LaneLineCubicCurve curve_camera_coord;

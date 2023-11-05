@@ -479,13 +479,13 @@ void Frame::ReadTrafficLights() {
   if (traffic_light_detection == nullptr) {
     return;
   }
-  const double delay = traffic_light_detection->header().timestamp_sec() -
-                       Clock::NowInSeconds();
-  if (delay > FLAGS_signal_expire_time_sec) {
-    ADEBUG << "traffic signals msg is expired, delay = " << delay
-           << " seconds.";
-    return;
-  }
+  // const double delay = traffic_light_detection->header().timestamp_sec() -
+  //                      Clock::NowInSeconds();
+  // if (delay > FLAGS_signal_expire_time_sec) {
+  //   ADEBUG << "traffic signals msg is expired, delay = " << delay
+  //          << " seconds.";
+  //   return;
+  // }
   for (const auto &traffic_light : traffic_light_detection->traffic_light()) {
     traffic_lights_[traffic_light.id()] = &traffic_light;
   }

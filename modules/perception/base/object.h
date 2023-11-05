@@ -31,7 +31,9 @@ namespace apollo {
 namespace perception {
 namespace base {
 
-struct Object {
+struct alignas(16) Object {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   Object();
   std::string ToString() const;
   void Reset();
@@ -101,10 +103,10 @@ struct Object {
 
   // @brief motion state of the tracked object, required
   MotionState motion_state = MotionState::UNKNOWN;
-  // Tailgating (trajectory of objects)
+  // // Tailgating (trajectory of objects)
   std::array<Eigen::Vector3d, 100> drops;
   std::size_t drop_num = 0;
-  // CIPV
+  // // CIPV
   bool b_cipv = false;
   // @brief brake light, left-turn light and right-turn light score, optional
   CarLight car_light;
@@ -116,8 +118,6 @@ struct Object {
 
   // @debug feature to be used for semantic mapping
 //  std::shared_ptr<apollo::prediction::Feature> feature;
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 using ObjectPtr = std::shared_ptr<Object>;

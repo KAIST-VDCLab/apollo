@@ -31,7 +31,7 @@ namespace apollo {
 namespace perception {
 namespace base {
 
-struct LidarObjectSupplement {
+struct alignas(16) LidarObjectSupplement {
   void Reset() {
     is_orientation_ready = false;
     on_use = false;
@@ -70,14 +70,12 @@ struct LidarObjectSupplement {
   // @brief raw probability of each classification method
   std::vector<std::vector<float>> raw_probs;
   std::vector<std::string> raw_classification_methods;
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 typedef std::shared_ptr<LidarObjectSupplement> LidarObjectSupplementPtr;
 typedef std::shared_ptr<const LidarObjectSupplement>
     LidarObjectSupplementConstPtr;
 
-struct RadarObjectSupplement {
+struct alignas(16) RadarObjectSupplement {
   void Reset() {
     on_use = false;
     range = 0.0f;
@@ -103,7 +101,7 @@ typedef std::shared_ptr<RadarObjectSupplement> RadarObjectSupplementPtr;
 typedef std::shared_ptr<const RadarObjectSupplement>
     RadarObjectSupplementConstPtr;
 
-struct CameraObjectSupplement {
+struct alignas(16) CameraObjectSupplement {
   CameraObjectSupplement() { Reset(); }
 
   void Reset() {
@@ -182,15 +180,13 @@ struct CameraObjectSupplement {
   // @brief cut off ratios on width, length (3D)
   //        cut off ratios on left, right (2D)
   float cut_off_ratios[4];
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 typedef std::shared_ptr<CameraObjectSupplement> CameraObjectSupplementPtr;
 typedef std::shared_ptr<const CameraObjectSupplement>
     CameraObjectSupplementConstPtr;
 
 typedef Eigen::Matrix4f MotionType;
-struct VehicleStatus {
+struct alignas(16) VehicleStatus {
   float roll_rate = 0;
   float pitch_rate = 0;
   float yaw_rate = 0;
@@ -201,15 +197,15 @@ struct VehicleStatus {
   double time_ts = 0;                          // time stamp
   double time_d = 0;                           // time stamp difference in image
   MotionType motion = MotionType::Identity();  // Motion Matrix
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 typedef boost::circular_buffer<VehicleStatus> MotionBuffer;
 typedef std::shared_ptr<MotionBuffer> MotionBufferPtr;
 typedef std::shared_ptr<const MotionBuffer> MotionBufferConstPtr;
 
-struct Vehicle3DStatus {
+struct alignas(16) Vehicle3DStatus {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   float yaw_delta;  // azimuth angle change
   float pitch_delta;
   float roll_delta;
@@ -219,8 +215,6 @@ struct Vehicle3DStatus {
   double time_ts;            // time stamp
   double time_d;             // time stamp difference in image
   Eigen::Matrix4f motion3d;  // 3-d Motion Matrix
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 typedef boost::circular_buffer<Vehicle3DStatus> Motion3DBuffer;
@@ -243,25 +237,23 @@ struct SensorObjectMeasurement {
   std::string sensor_id = "unknown_sensor";
   double timestamp = 0.0;
   int track_id = -1;
-  float theta = 0.0f;
   Eigen::Vector3d center = Eigen::Vector3d(0, 0, 0);
+  float theta = 0.0f;
   Eigen::Vector3f size = Eigen::Vector3f(0, 0, 0);
   Eigen::Vector3f velocity = Eigen::Vector3f(0, 0, 0);
   ObjectType type = ObjectType::UNKNOWN;
   // @brief only for camera measurement
   BBox2D<float> box;
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-struct FusionObjectSupplement {
+struct alignas(16) FusionObjectSupplement {
   FusionObjectSupplement() { measurements.reserve(5); }
   void Reset() {
     on_use = false;
     measurements.clear();
   }
   bool on_use = false;
-  apollo::common::EigenVector<SensorObjectMeasurement> measurements;
+  std::vector<SensorObjectMeasurement> measurements;
 };
 
 }  // namespace base

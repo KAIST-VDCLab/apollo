@@ -489,7 +489,22 @@ bool STObstaclesProcessor::ComputeObstacleSTBoundary(
             << obstacle.Perception().ShortDebugString();
     }
     // Get the overlapping s between ADC path and obstacle's perception box.
-    const Box2d& obs_box = obstacle.PerceptionBoundingBox();
+    // const Box2d& obs_box = obstacle.PerceptionBoundingBox();
+    const Box2d& obs_box_ped = [obstacle]() -> Box2d{
+      Box2d obs_box_modified = obstacle.PerceptionBoundingBox();
+      obs_box_modified.LongitudinalExtend(0.0);
+      obs_box_modified.LateralExtend(0.0);
+      return obs_box_modified;
+    }();
+    const Box2d& obs_box_veh = [obstacle]() -> Box2d{
+      Box2d obs_box_modified = obstacle.PerceptionBoundingBox();
+      obs_box_modified.LongitudinalExtend(0.0);
+      obs_box_modified.LateralExtend(0.0);
+      return obs_box_modified;
+    }();
+    const Box2d& obs_box = (obstacle.Perception().type() == 3) ? obs_box_ped
+                        : ((obstacle.Perception().type() == 5) ? obs_box_veh
+                        :   obstacle.PerceptionBoundingBox()); 
     std::pair<double, double> overlapping_s;
     if (GetOverlappingS(adc_path_points, obs_box, kADCSafetyLBuffer,
                         &overlapping_s)) {
@@ -510,7 +525,22 @@ bool STObstaclesProcessor::ComputeObstacleSTBoundary(
       // disjoint segments (happens very rarely), we merge them into one.
       // In the future, this could be considered in greater details rather
       // than being approximated.
-      const Box2d& obs_box = obstacle.GetBoundingBox(obs_traj_pt);
+      // const Box2d& obs_box = obstacle.GetBoundingBox(obs_traj_pt);
+      const Box2d& obs_box_ped = [obstacle, obs_traj_pt]() -> Box2d{
+        Box2d obs_box_modified = obstacle.GetBoundingBox(obs_traj_pt);
+        obs_box_modified.LongitudinalExtend(3.0);
+        obs_box_modified.LateralExtend(3.0);
+        return obs_box_modified;
+      }();
+      const Box2d& obs_box_veh = [obstacle, obs_traj_pt]() -> Box2d{
+        Box2d obs_box_modified = obstacle.GetBoundingBox(obs_traj_pt);
+        obs_box_modified.LongitudinalExtend(0.0);
+        obs_box_modified.LateralExtend(0.0);
+        return obs_box_modified;
+      }();
+      const Box2d& obs_box = (obstacle.Perception().type() == 3) ? obs_box_ped
+                          : ((obstacle.Perception().type() == 5) ? obs_box_veh
+                          :   obstacle.GetBoundingBox(obs_traj_pt)); 
       ADEBUG << obs_box.DebugString();
       std::pair<double, double> overlapping_s;
       if (GetOverlappingS(adc_path_points, obs_box, kADCSafetyLBuffer,

@@ -295,7 +295,7 @@ DEFINE_bool(align_prediction_time, false,
 // according to DMV's rule, turn signal should be on within 200 ft from
 // intersection.
 DEFINE_double(
-    turn_signal_distance, 100.00,
+    turn_signal_distance, 50.00,
     "In meters. If there is a turn within this distance, use turn signal");
 
 DEFINE_int32(trajectory_point_num_for_debug, 10,

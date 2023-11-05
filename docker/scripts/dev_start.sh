@@ -21,8 +21,7 @@ source "${CURR_DIR}/docker_base.sh"
 CACHE_ROOT_DIR="${APOLLO_ROOT_DIR}/.cache"
 
 DOCKER_REPO="apolloauto/apollo"
-DEV_CONTAINER_PREFIX='apollo_dev_'
-DEV_CONTAINER="${DEV_CONTAINER_PREFIX}${USER}"
+DEV_CONTAINER="apollo_dev_${USER}"
 DEV_INSIDE="in-dev-docker"
 
 SUPPORTED_ARCHS=(x86_64 aarch64)
@@ -34,20 +33,13 @@ TESTING_VERSION_X86_64="dev-x86_64-18.04-testing-20210112_0008"
 VERSION_AARCH64="dev-aarch64-18.04-20201218_0030"
 USER_VERSION_OPT=
 
-<<<<<<< HEAD
 ROCM_DOCKER_REPO="rocmapollo/apollo"
 VERSION_ROCM_X86_64="dev-x86_64-rocm-18.04-20221027_0916"
 TESTING_VERSION_ROCM_X86_64="dev-x86_64-rocm-18.04-testing"
 
 FAST_MODE="no"
-=======
-FAST_MODE="n"
->>>>>>> upstream/r8.0.0
 
 GEOLOC=
-TIMEZONE_CN=(
-  "Time zone: Asia/Shanghai (CST, +0800)"
-)
 
 USE_LOCAL_IMAGE=0
 CUSTOM_DIST=
@@ -57,26 +49,8 @@ VOLUME_VERSION="latest"
 SHM_SIZE="2G"
 USER_SPECIFIED_MAPS=
 MAP_VOLUMES_CONF=
+OTHER_VOLUMES_CONF=
 
-# Install python tools
-source docker/setup_host/host_env.sh
-DEFAULT_PYTHON_TOOLS=(
-  amodel~=0.1.0
-)
-
-# Model
-MODEL_REPOSITORY="https://apollo-pkg-beta.cdn.bcebos.com/perception_model"
-DEFAULT_INSTALL_MODEL=(
-  "${MODEL_REPOSITORY}/tl_detection_caffe.zip"
-  "${MODEL_REPOSITORY}/horizontal_caffe.zip"
-  "${MODEL_REPOSITORY}/quadrate_caffe.zip"
-  "${MODEL_REPOSITORY}/vertical_caffe.zip"
-  "${MODEL_REPOSITORY}/darkSCNN_caffe.zip"
-  "${MODEL_REPOSITORY}/cnnseg16_caffe.zip"
-  "${MODEL_REPOSITORY}/3d-r4-half_caffe.zip"
-)
-
-# Map
 DEFAULT_MAPS=(
     sunnyvale_big_loop
     sunnyvale_loop
@@ -86,6 +60,7 @@ DEFAULT_MAPS=(
 )
 
 DEFAULT_TEST_MAPS=(
+    sunnyvale_big_loop
     sunnyvale_loop
 )
 
@@ -94,7 +69,7 @@ function show_usage() {
 Usage: $0 [options] ...
 OPTIONS:
     -h, --help             Display this help and exit.
-    -f, --fast <y|n>       Fast mode without pulling all map volumes and perception models.
+    -f, --fast             Fast mode without pulling all map volumes.
     -g, --geo <us|cn|none> Pull docker image from geolocation specific registry mirror.
     -l, --local            Use local docker image.
     -t, --tag <TAG>        Specify docker image with tag <TAG> to start.
@@ -110,7 +85,6 @@ function parse_arguments() {
     local custom_dist=""
     local shm_size=""
     local geo=""
-    local fast_mode=""
 
     while [ $# -gt 0 ]; do
         local opt="$1"
@@ -137,9 +111,7 @@ function parse_arguments() {
                 ;;
 
             -f | --fast)
-                fast_mode="$1"
-                shift
-                optarg_check_for_opt "${opt}" "${fast_mode}"
+                FAST_MODE="yes"
                 ;;
 
             -g | --geo)
@@ -179,7 +151,6 @@ function parse_arguments() {
     done # End while loop
 
     [[ -n "${geo}" ]] && GEOLOC="${geo}"
-    [[ -n "${fast_mode}" ]] && FAST_MODE="${fast_mode}"
     [[ -n "${custom_version}" ]] && USER_VERSION_OPT="${custom_version}"
     [[ -n "${custom_dist}" ]] && CUSTOM_DIST="${custom_dist}"
     [[ -n "${shm_size}" ]] && SHM_SIZE="${shm_size}"
@@ -229,18 +200,6 @@ function check_target_arch() {
     exit 1
 }
 
-function check_timezone_cn() {
-    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    time_zone=$(timedatectl | grep "Time zone" | xargs)
-
-    for tz in "${TIMEZONE_CN[@]}"; do
-        if [[ "${time_zone}" == "${tz}" ]]; then
-            GEOLOC="cn"
-            return 0
-        fi
-    done
-}
-
 function setup_devices_and_mount_local_volumes() {
     local __retval="$1"
 
@@ -261,10 +220,6 @@ function setup_devices_and_mount_local_volumes() {
     local apollo_tools="${APOLLO_ROOT_DIR}/../apollo-tools"
     if [ -d "${apollo_tools}" ]; then
         volumes="${volumes} -v ${apollo_tools}:/tools"
-    fi
-    # Mount PYTHON_INSTALL_PATH to apollo docker
-    if [ -d "${PYTHON_INSTALL_PATH}" ]; then
-        volumes="${volumes} -v ${PYTHON_INSTALL_PATH}:${PYTHON_INSTALL_PATH}"
     fi
 
     local os_release="$(lsb_release -rs)"
@@ -351,7 +306,7 @@ function mount_map_volumes() {
         done
     fi
 
-    if [ "$FAST_MODE" == "n" ] || [ "$FAST_MODE" == "no" ]; then
+    if [[ "$FAST_MODE" == "no" ]]; then
         for map_name in ${DEFAULT_MAPS[@]}; do
             restart_map_volume_if_needed "${map_name}" "${VOLUME_VERSION}"
         done
@@ -362,7 +317,6 @@ function mount_map_volumes() {
     fi
 }
 
-<<<<<<< HEAD
 function mount_other_volumes() {
     info "Mount other volumes ..."
     local volume_conf=
@@ -430,31 +384,9 @@ function mount_other_volumes() {
         local smoke_path="/apollo/modules/perception/production/data/perception/camera/models/yolo_obstacle_detector/smoke_libtorch_model"
         docker_restart_volume "${smoke_volume}" "${smoke_image}" "${smoke_path}"
         volume_conf="${volume_conf} --volume ${smoke_volume}:${smoke_path}"
-=======
-function install_python_tools() {
-  export PYTHONUSERBASE=${PYTHON_INSTALL_PATH}
-
-  for tool in ${DEFAULT_PYTHON_TOOLS[@]}; do
-    info "Install python tool ${tool} ..."
-    # Use /usr/bin/pip3 because native python is used in the container.
-    /usr/bin/pip3 install --user "${tool}"
-    if [ $? -ne 0 ]; then
-        error "Failed to install ${tool}"
-        exit 1
->>>>>>> upstream/r8.0.0
     fi
-  done
-}
 
-function install_perception_models() {
-  if [ "$FAST_MODE" == "n" ] || [ "$FAST_MODE" == "no" ]; then
-    for model_url in ${DEFAULT_INSTALL_MODEL[@]}; do
-        info "Install model ${model_url} ..."
-        amodel install "${model_url}" -s
-    done
-  else
-    warning "Skip the model installation, if you need to run the perception module, you can manually install."
-  fi
+    OTHER_VOLUMES_CONF="${volume_conf}"
 }
 
 function main() {
@@ -474,8 +406,6 @@ function main() {
     info "USE_NVIDIA_GPU: ${USE_NVIDIA_GPU}"
 
     determine_dev_image "${USER_VERSION_OPT}"
-
-    [[ -z "${GEOLOC}" ]] && check_timezone_cn
     geo_specific_config "${GEOLOC}"
 
     if [[ "${USE_LOCAL_IMAGE}" -gt 0 ]]; then
@@ -494,18 +424,7 @@ function main() {
     setup_devices_and_mount_local_volumes local_volumes
 
     mount_map_volumes
-
-    if ! [ -x "$(command -v pip3)" ]; then
-      warning "Skip install perception models!!! " \
-          "Need pip3 to install Apollo model management tool!" \
-          "Try \"sudo apt install python3-pip\" "
-    else
-      info "Installing python tools ..."
-      install_python_tools
-
-      info "Installing perception models ..."
-      install_perception_models
-    fi
+    mount_other_volumes
 
     info "Starting Docker container \"${DEV_CONTAINER}\" ..."
 
@@ -528,12 +447,11 @@ function main() {
         -e DOCKER_GRP="${group}" \
         -e DOCKER_GRP_ID="${gid}" \
         -e DOCKER_IMG="${DEV_IMAGE}" \
-        -e PYTHON_INSTALL_PATH="${PYTHON_INSTALL_PATH}" \
-        -e PYTHON_VERSION="${PYTHON_VERSION}" \
         -e USE_GPU_HOST="${USE_GPU_HOST}" \
         -e NVIDIA_VISIBLE_DEVICES=all \
         -e NVIDIA_DRIVER_CAPABILITIES=compute,video,graphics,utility \
         ${MAP_VOLUMES_CONF} \
+        ${OTHER_VOLUMES_CONF} \
         ${local_volumes} \
         --net host \
         -w /apollo \

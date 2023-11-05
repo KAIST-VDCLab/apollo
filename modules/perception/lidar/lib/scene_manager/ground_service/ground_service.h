@@ -27,9 +27,6 @@ namespace lidar {
 
 class GroundServiceContent : public SceneServiceContent {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
- public:
   GroundServiceContent() = default;
   ~GroundServiceContent() = default;
   // @brief: get a copy of this service content

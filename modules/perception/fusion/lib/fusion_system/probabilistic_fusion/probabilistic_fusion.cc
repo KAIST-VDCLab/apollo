@@ -454,7 +454,8 @@ void ProbabilisticFusion::CollectObjectsByTrack(
                             camera_measurements.size() +
                             radar_measurements.size();
   obj->fusion_supplement.on_use = true;
-  auto& measurements = obj->fusion_supplement.measurements;
+  std::vector<base::SensorObjectMeasurement>& measurements =
+      obj->fusion_supplement.measurements;
   measurements.resize(num_measurements);
 
   // fill measurements

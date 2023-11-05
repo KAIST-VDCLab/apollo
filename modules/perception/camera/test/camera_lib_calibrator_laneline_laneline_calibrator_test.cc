@@ -18,7 +18,6 @@
 
 #include "absl/strings/str_cat.h"
 #include "cyber/common/log.h"
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/camera/test/camera_lib_calibrator_laneline_app_util.h"
 #include "modules/perception/camera/test/camera_lib_calibrator_laneline_lane_calibrator_util.h"
 #include "modules/perception/camera/test/camera_lib_calibrator_laneline_lane_io.h"
@@ -85,7 +84,7 @@ TEST(LanelineCalibratorTest, laneline_calibrator_test) {
 
   std::vector<std::string> frame_list;  // these three are aligned
   std::vector<double> time_stamps;
-  apollo::common::EigenVector<Eigen::Matrix4d> camera2world;
+  std::vector<Eigen::Matrix4d> camera2world;
   EXPECT_FALSE(camera::LoadCamera2WorldTfs("abc", &frame_list, &time_stamps,
                                            &camera2world));
   EXPECT_TRUE(camera::LoadCamera2WorldTfs(tf_file, &frame_list, &time_stamps,

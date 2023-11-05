@@ -93,6 +93,8 @@ class PiecewiseJerkPathOptimizer : public PathOptimizer {
 
   double GaussianWeighting(const double x, const double peak_weighting,
                            const double peak_weighting_x) const;
+
+  int opt_fail_cnt = 0;
 };
 
 }  // namespace planning

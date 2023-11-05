@@ -37,9 +37,10 @@ namespace localization {
 
 class RTKLocalizationComponent final
     : public cyber::Component<localization::Gps> {
- public:
+ public:    
   RTKLocalizationComponent();
-  ~RTKLocalizationComponent() = default;
+//   ~RTKLocalizationComponent() = default;
+  virtual ~RTKLocalizationComponent();
 
   bool Init() override;
 
@@ -52,6 +53,9 @@ class RTKLocalizationComponent final
   void PublishPoseBroadcastTF(const LocalizationEstimate &localization);
   void PublishPoseBroadcastTopic(const LocalizationEstimate &localization);
   void PublishLocalizationStatus(const LocalizationStatus &localization_status);
+  void ProcessLogs(const LocalizationEstimate &localization);
+
+  void CloseLogFile();
 
  private:
   std::shared_ptr<cyber::Reader<localization::CorrectedImu>>
@@ -72,10 +76,12 @@ class RTKLocalizationComponent final
 
   std::string broadcast_tf_frame_id_ = "";
   std::string broadcast_tf_child_frame_id_ = "";
-  bool broadcast_tf_use_system_clock = false;
   std::unique_ptr<apollo::transform::TransformBroadcaster> tf2_broadcaster_;
 
   std::unique_ptr<RTKLocalization> localization_;
+
+  // for logging purpose
+  std::ofstream localization_log_file_;
 };
 
 CYBER_REGISTER_COMPONENT(RTKLocalizationComponent);

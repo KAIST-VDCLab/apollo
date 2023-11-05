@@ -27,11 +27,10 @@ for entry in "${mainboard_path}" \
 done
 
 pathprepend ${bazel_bin_path}/cyber/python/internal PYTHONPATH
-pathprepend "${PYTHON_INSTALL_PATH}/lib/python${PYTHON_VERSION}/site-packages" PYTHONPATH
-pathprepend "${PYTHON_INSTALL_PATH}/bin/" PATH
 
 export CYBER_DOMAIN_ID=80
-export CYBER_IP=127.0.0.1
+# export CYBER_IP=127.0.0.1
+export CYBER_IP=192.168.50.98
 
 export GLOG_log_dir="${APOLLO_ROOT_DIR}/data/log"
 export GLOG_alsologtostderr=0

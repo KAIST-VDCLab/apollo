@@ -94,7 +94,17 @@ Stage::StageStatus TrafficLightUnprotectedRightTurnStageStop::Process(
     }
 
     // check on traffic light color
-    if (signal_color != TrafficLight::GREEN) {
+    if (signal_color != TrafficLight::GREEN || signal_color != TrafficLight::GREEN_LEFTTURN) {
+        if ((traffic_light_overlap_id == "C119BS010101" || traffic_light_overlap_id == "C119BS010102") && frame->vehicle_state().linear_velocity() == 0) {
+          //std::cout << "PED Traffic!!!!!!!" << std::endl;
+          if(whatever_stop_ > 300)
+            return FinishStage(true);
+          whatever_stop_ ++;
+        }
+        else
+        {
+          whatever_stop_=0;
+        }
       traffic_light_all_green = false;
       traffic_light_no_right_turn_on_red =
           CheckTrafficLightNoRightTurnOnRed(traffic_light_overlap_id);

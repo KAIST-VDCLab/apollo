@@ -96,15 +96,25 @@ export default class RoutingEditor {
     this.parkingInfo = info;
   }
 
-  setParkingSpaceInfo(parkingSpaceInfo, coordinates) {
+  setParkingSpaceInfo(parkingSpaceInfo, extraInformation, coordinates, scene) {
     this.parkingSpaceInfo = parkingSpaceInfo;
-    this.parkingSpaceInfo.forEach((item) => {
+    this.parkingSpaceInfo.forEach((item, index) => {
+      const extraInfo = extraInformation[index];
+      if (_.isEmpty(extraInfo)) {
+        return false;
+      }
       const offsetPoints = item.polygon.point.map(point =>
         coordinates.applyOffset({ x: point.x, y: point.y })
       );
-      item.polygon.point = offsetPoints;
-      // keep this property to decide change parking space color
+      const adjustPoints = extraInfo.order.map(number => {
+        return offsetPoints[number];
+      });
+      item.polygon.point = adjustPoints;
+      item.type = extraInfo.type;
+      item.routingEndPoint = extraInfo.routingEndPoint;
+      item.laneWidth = extraInfo.laneWidth;
       item.selectedCounts = 0;
+      item.laneId = extraInfo.laneId;
     });
   }
 
@@ -192,14 +202,38 @@ export default class RoutingEditor {
     const index = _.isEmpty(this.routePoints) ?
       -1 : this.isPointInParkingSpace(this.routePoints[this.routePoints.length - 1].position);
     const points = _.isEmpty(routingPoints) ?
-      this.routePoints.map((object) => {
-        object.position.z = 0;
-        return coordinates.applyOffset(object.position, true);
-      }) : routingPoints.map((point) => {
+      this.routePoints.map(object =>
+        this.handleRoutingPointObject(object, coordinates, 'position'))
+      : routingPoints.map((point) => {
         point.z = 0;
         return _.pick(point, ['x', 'y', 'z', 'heading']);
       });
     const parkingRoutingRequest = (index !== -1);
+    if (parkingRoutingRequest) {
+      const lastPoint = _.last(this.routePoints);
+      const { routingEndPoint, id, type, laneWidth, laneId } = this.parkingSpaceInfo[index];
+      const parkingRequestPoints = points.slice(0, -1);
+      parkingRequestPoints.push(coordinates.applyOffset(routingEndPoint, true));
+      const start = (parkingRequestPoints.length > 1) ? parkingRequestPoints[0]
+        : coordinates.applyOffset(carOffsetPosition, true);
+      const startHeading = (parkingRequestPoints.length > 1) ? null : carHeading;
+      const end = parkingRequestPoints[parkingRequestPoints.length - 1];
+      const waypoint = (parkingRequestPoints.length > 1) ? parkingRequestPoints.slice(1, -1) : [];
+      this.parkingSpaceInfo[index].polygon.point.forEach(vertex => {
+        vertex.z = 0;
+        parkingRequestPoints.push(coordinates.applyOffset(vertex, true));
+      });
+      const cornerPoints = parkingRequestPoints.slice(-4);
+      const parkingInfo = {
+        parkingSpaceId: _.get(id, 'id'),
+        parkingPoint: coordinates.applyOffset(lastPoint.position, true),
+        parkingSpaceType: type,
+      };
+      WS.sendParkingRequest(
+        start, waypoint, end, parkingInfo, laneWidth, cornerPoints, laneId, startHeading
+      );
+      return true;
+    }
     const start = (points.length > 1) ? points[0]
       : coordinates.applyOffset(carOffsetPosition, true);
     // If the starting point comes from routePoints
@@ -208,17 +242,7 @@ export default class RoutingEditor {
     const start_heading = (points.length > 1) ? null : carHeading;
     const end = points[points.length - 1];
     const waypoint = (points.length > 1) ? points.slice(1, -1) : [];
-    if (parkingRoutingRequest) {
-      const { id } = this.parkingSpaceInfo[index];
-      const parkingInfo = {
-        parkingSpaceId: _.get(id, 'id'),
-      };
-
-      WS.sendParkingRequest(
-        start, start_heading, waypoint, end, parkingInfo);
-    } else {
-      WS.requestRoute(start, start_heading, waypoint, end, this.parkingInfo);
-    }
+    WS.requestRoute(start, start_heading, waypoint, end, this.parkingInfo);
     return true;
   }
 

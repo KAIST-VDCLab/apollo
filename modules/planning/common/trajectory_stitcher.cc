@@ -62,14 +62,20 @@ TrajectoryStitcher::ComputeReinitStitchingTrajectory(
   static constexpr double kEpsilon_v = 0.1;
   static constexpr double kEpsilon_a = 0.4;
   // TODO(Jinyun/Yu): adjust kEpsilon if corrected IMU acceleration provided
+  // std::cout << "ComputeReinitStitchingTrajectory" << std::endl;
+  // // std::cout << vehicle_state.x() << ", " << vehicle_state.y() << ", " << vehicle_state.z() << ", "
+  //           << vehicle_state.heading() << ", " << vehicle_state.kappa() << std::endl;
   if (std::abs(vehicle_state.linear_velocity()) < kEpsilon_v &&
       std::abs(vehicle_state.linear_acceleration()) < kEpsilon_a) {
     reinit_point = ComputeTrajectoryPointFromVehicleState(planning_cycle_time,
                                                           vehicle_state);
   } else {
+    // std::cout << "else: ComputeTrajectoryPointFromVehicleState" << std::endl;
     VehicleState predicted_vehicle_state;
     predicted_vehicle_state =
         VehicleModel::Predict(planning_cycle_time, vehicle_state);
+    // std::cout << predicted_vehicle_state.x() << ", " << predicted_vehicle_state.y() << ", " << predicted_vehicle_state.z() << ", "
+        // << predicted_vehicle_state.heading() << ", " << predicted_vehicle_state.kappa() << std::endl;
     reinit_point = ComputeTrajectoryPointFromVehicleState(
         planning_cycle_time, predicted_vehicle_state);
   }

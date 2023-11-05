@@ -45,6 +45,8 @@
 
 typedef std::shared_ptr<apollo::perception::Motion_Service>
     MotionServiceMsgType;
+using apollo::common::EigenMap;
+using apollo::common::EigenVector;
 
 namespace apollo {
 namespace perception {
@@ -54,12 +56,6 @@ class CameraBevDetectionComponent
     : public apollo::cyber::Component<apollo::drivers::Image> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-  template <typename T, class EigenType>
-  using EigenMap = apollo::common::EigenMap<T, EigenType>;
-
-  template <class EigenType>
-  using EigenVector = apollo::common::EigenVector<EigenType>;
 
  public:
   CameraBevDetectionComponent() : seq_num_(0) {}
@@ -224,7 +220,7 @@ class CameraBevDetectionComponent
   base::MotionBufferPtr motion_buffer_;
   const int motion_buffer_size_ = 100;
 
-  // variables for CIPV
+  // // variables for CIPV
   bool enable_cipv_ = false;
   std::unique_ptr<camera::BaseCipv> cipv_;
   camera::CipvInitOptions cipv_init_options_;

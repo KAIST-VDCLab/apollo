@@ -45,6 +45,13 @@ class Destination : public TrafficRule {
  private:
   int MakeDecisions(Frame* const frame,
                     ReferenceLineInfo* const reference_line_info);
+  void StopRoundabout(Frame* const frame,
+                      ReferenceLineInfo* const reference_line_info);
+  void StopRoundabout2(Frame* const frame,
+                      ReferenceLineInfo* const reference_line_info);                    
+  void StopPoint1(Frame* const frame,
+                      ReferenceLineInfo* const reference_line_info);
+  double cal_distance(double x1, double y1, double x2, double y2);
 };
 
 }  // namespace planning

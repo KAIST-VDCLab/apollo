@@ -82,7 +82,6 @@ install(
         "//modules/tools/routing:install",
         "//modules/tools/sensor_calibration:install",
         "//modules/tools/vehicle_calibration:install",
-        "//modules/tools/vehicle_profile:install",
         "//modules/tools/visualizer:install",
         ":pb_hdrs"
     ],

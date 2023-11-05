@@ -29,9 +29,6 @@ namespace lidar {
 
 class ROIServiceContent : public SceneServiceContent {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
- public:
   using Vec2ui = Eigen::Matrix<size_t, 2, 1>;
   enum class DirectionMajor { XMAJOR = 0, YMAJOR = 1 };
 

@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "cyber/common/macros.h"
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/fusion/common/kalman_filter.h"
 #include "modules/perception/fusion/lib/interface/base_motion_fusion.h"
 
@@ -116,7 +115,7 @@ class KalmanMotionFusion : public BaseMotionFusion {
 
  private:
   bool filter_init_ = false;
-  apollo::common::EigenDeque<Eigen::Vector3d> history_velocity_;
+  std::deque<Eigen::Vector3d> history_velocity_;
   std::deque<double> history_timestamp_;
   std::deque<base::SensorType> history_sensor_type_;
   KalmanFilter kalman_filter_;

@@ -31,6 +31,8 @@ namespace perception {
 namespace lidar {
 
 struct LidarFrame {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   // point cloud
   std::shared_ptr<base::AttributePointCloud<base::PointF>> cloud;
   // world point cloud
@@ -89,8 +91,6 @@ struct LidarFrame {
       filtered_cloud->CopyPointCloudExclude(*cloud, indices);
     }
   }
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };  // struct LidarFrame
 
 }  // namespace lidar

@@ -6,6 +6,8 @@ const ColorCodeMapping = {
   RED: 'rgba(180, 49, 49, 0.8)',
   BLACK: 'rgba(30, 30, 30, 0.8)',
   UNKNOWN: 'rgba(30, 30, 30, 0.8)',
+  RED_LEFTTURN: 'rgba(79, 198, 105, 0.8)',
+  GREEN_LEFTTURN: 'rgba(79, 198, 105, 0.8)',
   '': null,
 };
 

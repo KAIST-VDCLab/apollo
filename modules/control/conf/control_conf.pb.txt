@@ -1,33 +1,20 @@
-control_test_duration: -1
-enable_csv_debug: false
-enable_speed_station_preview: false
-is_control_test_mode: false
-use_preview_speed_for_table: false
-enable_input_timestamp_check: false
-max_localization_miss_num : 20
-max_planning_miss_num: 20
-max_acceleration_when_stopped: 0.01
-max_path_remain_when_stopped: 0.3
-steer_angle_rate: 100
-enable_gain_scheduler: true
-set_steer_limit: true
-enable_slope_offset: false
-
-control_period: 0.01
+control_period: 0.02
 trajectory_period: 0.1
-chassis_period: 0.01
+chassis_period: 0.02
 localization_period: 0.01
 max_status_interval_sec: 0.1
 max_planning_interval_sec: 0.2
 max_planning_delay_threshold: 4.0
 action: STOP
-soft_estop_brake: 50.0
+soft_estop_brake: 55.5
 active_controllers: LAT_CONTROLLER
 active_controllers: LON_CONTROLLER
 max_steering_percentage_allowed: 100
-minimum_speed_resolution: 0.2
-query_relative_time: 0.8
+minimum_speed_resolution: 0.05
+query_relative_time: 0.2
 minimum_speed_protection: 0.1
+enable_input_timestamp_check: true
+enable_persistent_estop: true
 lat_controller_conf {
   ts: 0.01
   preview_window: 0
@@ -38,21 +25,21 @@ lat_controller_conf {
   mass_rl: 520
   mass_rr: 520
   eps: 0.01
-  matrix_q: 0.05
-  matrix_q: 0.0
-  matrix_q: 1.0
-  matrix_q: 0.0
-  reverse_matrix_q: 0.05
+  matrix_q: 0.1 # lat err 0.1
+  matrix_q: 0.0 # lat err rate 0.0
+  matrix_q: 1.0 # head err 1.0
+  matrix_q: 0.0 # head err rate 0.0
+  reverse_matrix_q: 0.5
   reverse_matrix_q: 0.0
-  reverse_matrix_q: 1.0
+  reverse_matrix_q: 0.4
   reverse_matrix_q: 0.0
   cutoff_freq: 10
-  mean_filter_window_size: 10
-  max_iteration: 150
+  mean_filter_window_size: 3
+  max_iteration: 100
   max_lateral_acceleration: 5.0
-  enable_reverse_leadlag_compensation: true
+  enable_reverse_leadlag_compensation: false
   enable_steer_mrac_control: false
-  enable_look_ahead_back_control: true
+  enable_look_ahead_back_control: false
   lookahead_station: 1.4224
   lookback_station: 2.8448
   lookahead_station_high_speed: 1.4224
@@ -64,19 +51,23 @@ lat_controller_conf {
     }
     scheduler {
       speed: 8.0
-      ratio: 0.6
+      ratio: 0.66
     }
     scheduler {
       speed: 12.0
-      ratio: 0.2
+      ratio: 0.21
     }
     scheduler {
       speed: 20.0
-      ratio: 0.1
+      ratio: 0.05
     }
     scheduler {
-      speed: 25.0
+      speed: 22.0
       ratio: 0.05
+    }
+    scheduler {
+      speed: 24.6
+      ratio: 0.049
     }
   }
   heading_err_gain_scheduler {
@@ -94,11 +85,15 @@ lat_controller_conf {
     }
     scheduler {
       speed: 20.0
-      ratio: 0.2
+      ratio: 0.12
     }
     scheduler {
-      speed: 25.0
-      ratio: 0.1
+      speed: 24.0
+      ratio: 0.06
+    }
+    scheduler {
+      speed: 24.6
+      ratio: 0.06
     }
   }
   reverse_leadlag_conf {
@@ -124,60 +119,68 @@ lat_controller_conf {
 lon_controller_conf {
   ts: 0.01
   brake_minimum_action: 0.0
-  throttle_minimum_action: 0.0
+  throttle_minimum_action: 20.0
   speed_controller_input_limit: 2.0
-  station_error_limit: 2.0
-  preview_window: 20.0
-  standstill_acceleration: -0.3
-  enable_reverse_leadlag_compensation: false
+  station_error_limit: 1.0
+  preview_window: 120.0
+  standstill_acceleration: -4.0
   station_pid_conf {
     integrator_enable: false
     integrator_saturation_level: 0.3
-    kp: 0.2
+    kp: 0.5
     ki: 0.0
     kd: 0.0
   }
   low_speed_pid_conf {
-    integrator_enable: true
+    integrator_enable: false
     integrator_saturation_level: 0.3
-    kp: 2.0
-    ki: 0.3
+    kp: 0.5
+    ki: 0.0
     kd: 0.0
   }
   high_speed_pid_conf {
-    integrator_enable: true
+    integrator_enable: false
     integrator_saturation_level: 0.3
-    kp: 1.0
-    ki: 0.3
+    kp: 0.5
+    ki: 0.0
     kd: 0.0
   }
-  switch_speed: 3.0
+  ramp_station_pid_conf {
+    integrator_enable: false
+    integrator_saturation_level: 0.3
+    kp: 2.3
+    ki: 0.0
+    kd: 0.0
+  }
+  ramp_low_speed_pid_conf {
+    integrator_enable: false
+    integrator_saturation_level: 0.3
+    kp: 2.3
+    ki: 0.0
+    kd: 0.0
+  }
+  ramp_high_speed_pid_conf {
+    integrator_enable: false
+    integrator_saturation_level: 0.3
+    kp: 2.3
+    ki: 0.0
+    kd: 0.0
+  }
+  switch_speed: 2.78
   switch_speed_window: 1.0
   reverse_station_pid_conf {
-    integrator_enable: true
+    integrator_enable: false
     integrator_saturation_level: 0.5
     kp: 0.4
-    ki: 0.1
+    ki: 0.2
     kd: 0.0
   }
   reverse_speed_pid_conf {
     integrator_enable: true
-    integrator_saturation_level: 0.5
-    kp: 2.0
-    ki: 0.3
+    integrator_saturation_level: 0.1
+    kp: 0.05
+    ki: 0.0
     kd: 0.0
-  }
-  reverse_station_leadlag_conf {
-    innerstate_saturation_level: 1000
-    alpha: 1.0
-    beta: 1.0
-    tau: 0.0
-  }
-  reverse_speed_leadlag_conf {
-    innerstate_saturation_level: 1000
-    alpha: 1.0
-    beta: 1.0
-    tau: 0.0
   }
   pitch_angle_filter_conf {
     cutoff_freq: 5
@@ -13287,3 +13290,6 @@ mpc_controller_conf {
     }
   }
 }
+
+
+

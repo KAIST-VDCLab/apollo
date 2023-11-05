@@ -20,7 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/camera/lib/calibrator/laneline/lane_based_calibrator.h"
 #include "modules/perception/camera/test/camera_lib_calibrator_laneline_app_util.h"
 
@@ -39,11 +38,10 @@ bool LoadLaneDet(const std::string &filename, EgoLane *ego_lane);
 std::vector<std::string> Split(const std::string &s,
                                const std::string &separator);
 
-bool LoadCamera2WorldTfs(
-    const std::string &filename,
-    std::vector<std::string> *frame_list,
-    std::vector<double> *time_stamps,
-    apollo::common::EigenVector<Eigen::Matrix4d> *camera2world);
+bool LoadCamera2WorldTfs(const std::string &filename,
+                         std::vector<std::string> *frame_list,
+                         std::vector<double> *time_stamps,
+                         std::vector<Eigen::Matrix4d> *camera2world);
 
 }  // namespace camera
 }  // namespace perception

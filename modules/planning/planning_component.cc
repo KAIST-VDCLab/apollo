@@ -190,12 +190,45 @@ bool PlanningComponent::Proc(
   auto start_time = adc_trajectory_pb.header().timestamp_sec();
   common::util::FillHeader(node_->Name(), &adc_trajectory_pb);
 
+  //sklee lane departure - 20230504
+  for(int i=0; i< adc_trajectory_pb.debug().planning_data().path_size(); ++i)
+  {
+  const auto& ref_line_ = adc_trajectory_pb.debug().planning_data().path(2);
+
+  p1_x = ref_line_.path_point(1).x();
+  p1_y = ref_line_.path_point(1).y();
+  p2_x = ref_line_.path_point(3).x();
+  p2_y = ref_line_.path_point(3).y();
+  ego_x = local_view_.localization_estimate.get()->pose().position().x();
+  ego_y = local_view_.localization_estimate.get()->pose().position().y();
+
+  // find slope (m)
+  m = (p2_y - p1_y) / (p2_x - p1_x);
+  // find y-intercept (b)
+  b = p1_y - m * p1_x;
+  // calculate the slope of the perpendicular line
+  perp_slope = -1 / m;
+  // calculate the y-intercept of the perpendicular line
+  perp_b = ego_y - perp_slope * ego_x;
+  // calculate the x and y coordinates of the intersection point
+  intersection_x = (perp_b - b) / (m - perp_slope);
+  intersection_y = m * intersection_x + b;
+  const double lane_diff = sqrt(pow((intersection_x - ego_x), 2) + pow((intersection_y - ego_y), 2));
+    
+  adc_trajectory_pb.set_lane_diff(lane_diff);
+  }
+
+  adc_trajectory_pb.set_fcd(injector_->ego_info()->front_clear_distance());
+
   // modify trajectory relative time due to the timestamp change in header
   const double dt = start_time - adc_trajectory_pb.header().timestamp_sec();
   for (auto& p : *adc_trajectory_pb.mutable_trajectory_point()) {
     p.set_relative_time(p.relative_time() + dt);
   }
   planning_writer_->Write(adc_trajectory_pb);
+
+  if(injector_->ego_info()->front_clear_distance() != 300)//on lane distance default 300
+    injector_->ego_info()->Update_distance(); // front clear distance clear().
 
   // record in history
   auto* history = injector_->history();

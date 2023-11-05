@@ -39,7 +39,6 @@ cc_library(
         "//cyber",
         "//modules/perception/base",
         "//modules/perception/camera/common",
-        "//modules/common/util:util_tool",
         "@com_github_jbeder_yaml_cpp//:yaml-cpp",
         "@eigen",
     ],

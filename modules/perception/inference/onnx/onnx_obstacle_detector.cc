@@ -38,9 +38,7 @@ OnnxObstacleDetector::OnnxObstacleDetector(
   const std::string &model_file,
   const std::vector<std::string> &outputs,
   const std::vector<std::string> &inputs)
-  : model_file_(model_file),
-    output_names_(outputs),
-    input_names_(inputs) {}
+  : model_file_(model_file), output_names_(outputs), input_names_(inputs) {}
 
 OnnxObstacleDetector::~OnnxObstacleDetector() {}
 

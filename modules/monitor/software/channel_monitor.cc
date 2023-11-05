@@ -27,6 +27,7 @@
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/dynamic_message.h"
 
+
 #include "modules/common_msgs/chassis_msgs/chassis_detail.pb.h"
 #include "modules/common/latency_recorder/proto/latency_record.pb.h"
 #include "modules/common_msgs/control_msgs/control_cmd.pb.h"
@@ -35,6 +36,7 @@
 #include "modules/common_msgs/localization_msgs/pose.pb.h"
 #include "modules/common_msgs/planning_msgs/navigation.pb.h"
 #include "modules/common_msgs/perception_msgs/perception_obstacle.pb.h"
+#include "modules/common_msgs/perception_msgs/traffic_light_detection.pb.h"
 #include "modules/common_msgs/planning_msgs/planning.pb.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 
@@ -48,7 +50,7 @@
 DEFINE_string(channel_monitor_name, "ChannelMonitor",
               "Name of the channel monitor.");
 
-DEFINE_double(channel_monitor_interval, 5,
+DEFINE_double(channel_monitor_interval, 2.5,
               "Channel monitor checking interval in seconds.");
 
 namespace apollo {
@@ -75,30 +77,49 @@ ReaderAndMessagePair GetReaderAndLatestMessage(const std::string& channel) {
                                           const std::string& channel)>>{
           {FLAGS_control_command_topic,
            &CreateReaderAndLatestsMessage<control::ControlCommand>},
+
           {FLAGS_localization_topic,
            &CreateReaderAndLatestsMessage<localization::LocalizationEstimate>},
+
           {FLAGS_perception_obstacle_topic,
            &CreateReaderAndLatestsMessage<perception::PerceptionObstacles>},
+
           {FLAGS_prediction_topic,
            &CreateReaderAndLatestsMessage<prediction::PredictionObstacles>},
+
+          {FLAGS_traffic_light_detection_topic,
+           &CreateReaderAndLatestsMessage<perception::TrafficLightDetection>},
+
           {FLAGS_planning_trajectory_topic,
            &CreateReaderAndLatestsMessage<planning::ADCTrajectory>},
+
           {FLAGS_conti_radar_topic,
            &CreateReaderAndLatestsMessage<drivers::ContiRadar>},
+
           {FLAGS_relative_map_topic,
            &CreateReaderAndLatestsMessage<relative_map::MapMsg>},
+
           {FLAGS_pointcloud_topic,
            &CreateReaderAndLatestsMessage<drivers::PointCloud>},
+
           {FLAGS_pointcloud_16_topic,
            &CreateReaderAndLatestsMessage<drivers::PointCloud>},
+
           {FLAGS_pointcloud_16_raw_topic,
            &CreateReaderAndLatestsMessage<drivers::PointCloud>},
+
           {FLAGS_pointcloud_128_topic,
            &CreateReaderAndLatestsMessage<drivers::PointCloud>},
+
           {FLAGS_pointcloud_16_front_up_topic,
            &CreateReaderAndLatestsMessage<drivers::PointCloud>},
+
           {FLAGS_chassis_detail_topic,
            &CreateReaderAndLatestsMessage<canbus::ChassisDetail>},
+
+          {FLAGS_chassis_topic,
+           &CreateReaderAndLatestsMessage<canbus::Chassis>},
+
           {FLAGS_pointcloud_hesai_40p_topic,
            &CreateReaderAndLatestsMessage<drivers::PointCloud>}
           // Add more channels here if you want to monitor.
@@ -207,7 +228,7 @@ void ChannelMonitor::UpdateStatus(
   if (message != nullptr) {
     for (const auto& field : config.mandatory_fields()) {
       if (!ValidateFields(*message, absl::StrSplit(field, field_sepr), 0)) {
-        SummaryMonitor::EscalateStatus(
+          SummaryMonitor::EscalateStatus(
             ComponentStatus::ERROR,
             absl::StrCat(config.name(), " missing field ", field), status);
       }

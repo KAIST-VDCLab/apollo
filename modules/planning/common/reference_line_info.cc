@@ -23,16 +23,14 @@
 #include <algorithm>
 
 #include "absl/strings/str_cat.h"
-
-#include "modules/common_msgs/planning_msgs/sl_boundary.pb.h"
-#include "modules/planning/proto/planning_status.pb.h"
-
 #include "cyber/task/task.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/util/point_factory.h"
 #include "modules/common/util/util.h"
 #include "modules/map/hdmap/hdmap_common.h"
 #include "modules/map/hdmap/hdmap_util.h"
+#include "modules/planning/proto/planning_status.pb.h"
+#include "modules/common_msgs/planning_msgs/sl_boundary.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -630,6 +628,16 @@ void ReferenceLineInfo::SetDrivable(bool drivable) { is_drivable_ = drivable; }
 
 bool ReferenceLineInfo::IsDrivable() const { return is_drivable_; }
 
+void ReferenceLineInfo::SetIsApproachingLaneChange(
+  bool is_approaching, double target_lane_end_l) { 
+  is_approaching_lane_change_ = is_approaching;
+  if (is_approaching){
+    target_lane_end_l_ = target_lane_end_l;
+    }
+}
+
+bool ReferenceLineInfo::IsApproachingLaneChange() const { return is_approaching_lane_change_; }
+
 bool ReferenceLineInfo::IsChangeLanePath() const {
   return !Lanes().IsOnSegment();
 }
@@ -651,6 +659,19 @@ void ReferenceLineInfo::SetTurnSignalBasedOnLaneTurnType(
     return;
   }
   vehicle_signal->set_turn_signal(VehicleSignal::TURN_NONE);
+
+  if (IsApproachingLaneChange()){
+    // see sl_boundary.proto
+    double current_lane_l = adc_sl_boundary_.end_l();
+    const double lane_change_buffer = 0.5; //m //1.5
+    std::cout << "LANE L DELTA:" << current_lane_l - target_lane_end_l_ << "\n";
+    if (current_lane_l - target_lane_end_l_ <= -lane_change_buffer){
+      vehicle_signal->set_turn_signal(VehicleSignal::TURN_RIGHT);
+    } else if (current_lane_l - target_lane_end_l_ >= lane_change_buffer){
+      vehicle_signal->set_turn_signal(VehicleSignal::TURN_LEFT);
+    }
+    return;
+  }
 
   // Set turn signal based on lane-change.
   if (IsChangeLanePath()) {

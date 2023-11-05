@@ -41,6 +41,8 @@ class EgoInfo {
   bool Update(const common::TrajectoryPoint& start_point,
               const common::VehicleState& vehicle_state);
 
+  void Update_distance();
+
   void Clear();
 
   common::TrajectoryPoint start_point() const { return start_point_; }

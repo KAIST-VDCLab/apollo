@@ -78,7 +78,6 @@ cc_library(
     hdrs = ["base_calibration_service.h"],
     deps = [
         ":base_init_options",
-        "//modules/common/util:util_tool",
         "//modules/perception/camera/common",
         "//modules/perception/lib/registerer",
         "//modules/perception/pipeline:stage",

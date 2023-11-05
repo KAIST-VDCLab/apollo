@@ -107,8 +107,6 @@ bool CanbusComponent::Init() {
   if (!vehicle_object_->Start()) {
     AERROR << "Fail to start canclient, cansender, canreceiver, canclient, "
               "vehicle controller.";
-    Clear();
-    return false;
   }
   AINFO << "Start canclient cansender, canreceiver, canclient, vehicle "
            "controller successfully.";

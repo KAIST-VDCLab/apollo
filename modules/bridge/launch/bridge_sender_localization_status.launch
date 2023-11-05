@@ -1,0 +1,7 @@
+<cyber>
+    <module>
+        <name>bridge_sender_localization_status</name>
+        <dag_conf>/apollo/modules/bridge/dag/bridge_sender_localization_status.dag</dag_conf>
+        <process_name>udp_bridge_sender_status</process_name>
+    </module>
+</cyber>

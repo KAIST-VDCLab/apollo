@@ -44,24 +44,6 @@ bool PriSecFusionComponent::Init() {
 bool PriSecFusionComponent::Proc(
     const std::shared_ptr<PointCloud>& point_cloud) {
   auto target = std::make_shared<PointCloud>(*point_cloud);
-  // set measure timestamp
-  lidar_system_offset_ns_ = 0;
-  if (conf_.has_use_system_clock() && conf_.use_system_clock()) {
-    lidar_system_offset_ns_ = target->header().lidar_timestamp() -
-      static_cast<uint64_t>(target->header().timestamp_sec() * 1000000000);
-    target->set_measurement_time(target->header().timestamp_sec());
-  }
-
-  if (conf_.has_target_frame_id()
-      && conf_.target_frame_id() != target->header().frame_id()) {
-    target->mutable_header()->set_frame_id(conf_.target_frame_id());
-    target->clear_point();
-    Fusion(target, point_cloud);
-  } else if (lidar_system_offset_ns_ != 0) {
-    for (auto& point : *target->mutable_point()) {
-      point.set_timestamp(GetPointTimestamp(point.timestamp()));
-    }
-  }
   auto fusion_readers = readers_;
   auto start_time = Time::Now().ToSecond();
   while ((Time::Now().ToSecond() - start_time) < conf_.wait_time_s() &&
@@ -84,7 +66,6 @@ bool PriSecFusionComponent::Proc(
   }
   auto diff = Time::Now().ToNanosecond() - target->header().lidar_timestamp();
   AINFO << "Pointcloud fusion diff: " << diff / 1000000 << "ms";
-  target->mutable_header()->set_timestamp_sec(Time::Now().ToSecond());
   fusion_writer_->Write(target);
 
   return true;
@@ -127,22 +108,14 @@ bool PriSecFusionComponent::QueryPoseAffine(const std::string& target_frame_id,
   return true;
 }
 
-uint64_t PriSecFusionComponent::GetPointTimestamp(const uint64_t& timestamp) {
-  if (lidar_system_offset_ns_ == 0) {
-    return timestamp;
-  }
-  return static_cast<uint64_t>(timestamp - lidar_system_offset_ns_);
-}
-
 void PriSecFusionComponent::AppendPointCloud(
     std::shared_ptr<PointCloud> point_cloud,
-    const std::shared_ptr<PointCloud> point_cloud_add,
-    const Eigen::Affine3d& pose) {
+    std::shared_ptr<PointCloud> point_cloud_add, const Eigen::Affine3d& pose) {
   if (std::isnan(pose(0, 0))) {
     for (auto& point : point_cloud_add->point()) {
       PointXYZIT* point_new = point_cloud->add_point();
       point_new->set_intensity(point.intensity());
-      point_new->set_timestamp(GetPointTimestamp(point.timestamp()));
+      point_new->set_timestamp(point.timestamp());
       point_new->set_x(point.x());
       point_new->set_y(point.y());
       point_new->set_z(point.z());
@@ -152,14 +125,14 @@ void PriSecFusionComponent::AppendPointCloud(
       if (std::isnan(point.x())) {
         PointXYZIT* point_new = point_cloud->add_point();
         point_new->set_intensity(point.intensity());
-        point_new->set_timestamp(GetPointTimestamp(point.timestamp()));
+        point_new->set_timestamp(point.timestamp());
         point_new->set_x(point.x());
         point_new->set_y(point.y());
         point_new->set_z(point.z());
       } else {
         PointXYZIT* point_new = point_cloud->add_point();
         point_new->set_intensity(point.intensity());
-        point_new->set_timestamp(GetPointTimestamp(point.timestamp()));
+        point_new->set_timestamp(point.timestamp());
         Eigen::Matrix<float, 3, 1> pt(point.x(), point.y(), point.z());
         point_new->set_x(static_cast<float>(
             pose(0, 0) * pt.coeffRef(0) + pose(0, 1) * pt.coeffRef(1) +
@@ -179,7 +152,7 @@ void PriSecFusionComponent::AppendPointCloud(
 }
 
 bool PriSecFusionComponent::Fusion(std::shared_ptr<PointCloud> target,
-                                   const std::shared_ptr<PointCloud> source) {
+                                   std::shared_ptr<PointCloud> source) {
   Eigen::Affine3d pose;
   if (QueryPoseAffine(target->header().frame_id(), source->header().frame_id(),
                       &pose)) {

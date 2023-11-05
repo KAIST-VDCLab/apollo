@@ -41,8 +41,6 @@ struct StampedTransform {
   double timestamp = 0.0;  // in second
   Eigen::Translation3d translation;
   Eigen::Quaterniond rotation;
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 class TransformCache {

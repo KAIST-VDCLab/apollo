@@ -271,7 +271,8 @@ bool TransformWrapper::QueryTrans(double timestamp, StampedTransform* trans,
                (timestamp - latest_buffer_time < 0.015) &&
                (timestamp - latest_buffer_time > 0)) {
       // soft trigger and the latency is within the tolerance range
-      query_time = apollo::cyber::Time(0);
+      // still lookup by timestamp
+      // query_time = apollo::cyber::Time(0);
     } else {
       AERROR << "Can not find transform. " << FORMAT_TIMESTAMP(timestamp)
              << " frame_id: " << frame_id

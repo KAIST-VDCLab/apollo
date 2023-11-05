@@ -41,6 +41,11 @@ bool EgoInfo::Update(const common::TrajectoryPoint& start_point,
   return true;
 }
 
+void EgoInfo::Update_distance()
+{
+  front_clear_distance_ = FLAGS_default_front_clear_distance;
+}
+
 void EgoInfo::CalculateEgoBox(const common::VehicleState& vehicle_state) {
   const auto& param = ego_vehicle_config_.vehicle_param();
   ADEBUG << "param: " << param.DebugString();
@@ -94,6 +99,8 @@ void EgoInfo::CalculateFrontObstacleClearDistance(
       continue;
     }
 
+    //std::cout << "[ego_info.cc] :" << obstacle->Perception().DebugString() << std::endl;
+    // highway UNKNOWN
     double dist = ego_box_.center().DistanceTo(
                       obstacle->PerceptionBoundingBox().center()) -
                   ego_box_.diagonal() / 2.0;

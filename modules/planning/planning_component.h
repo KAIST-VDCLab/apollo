@@ -86,6 +86,25 @@ class PlanningComponent final
 
   PlanningConfig config_;
   MessageProcess message_process_;
+
+  double p1_x;
+  double p1_y;
+  double p2_x;
+  double p2_y;
+  double ego_x;
+  double ego_y;
+
+  // find slope (m)
+  double m;
+  // find y-intercept (b)
+  double b;
+  // calculate the slope of the perpendicular line
+  double perp_slope ;
+  // calculate the y-intercept of the perpendicular line
+  double perp_b ;
+  // calculate the x and y coordinates of the intersection point
+  double intersection_x;
+  double intersection_y;
 };
 
 CYBER_REGISTER_COMPONENT(PlanningComponent)

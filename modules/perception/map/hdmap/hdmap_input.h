@@ -33,10 +33,6 @@ namespace map {
 
 class HDMapInput {
  public:
-  template <class EigenType>
-  using EigenVector = apollo::common::EigenVector<EigenType>;
-
- public:
   // thread safe
   bool Init();
   bool Reset();
@@ -54,14 +50,17 @@ class HDMapInput {
   void MergeBoundaryJunction(
       const std::vector<apollo::hdmap::RoadRoiPtr>& boundary,
       const std::vector<apollo::hdmap::JunctionInfoConstPtr>& junctions,
-      EigenVector<base::RoadBoundary>* road_boundaries_ptr,
-      EigenVector<base::PointCloud<base::PointD>>* road_polygons_ptr,
-      EigenVector<base::PointCloud<base::PointD>>* junction_polygons_ptr);
+      apollo::common::EigenVector<base::RoadBoundary>* road_boundaries_ptr,
+      apollo::common::EigenVector<base::PointCloud<base::PointD>>*
+          road_polygons_ptr,
+      apollo::common::EigenVector<base::PointCloud<base::PointD>>*
+          junction_polygons_ptr);
 
   bool GetRoadBoundaryFilteredByJunctions(
-      const EigenVector<base::RoadBoundary>& road_boundaries,
-      const EigenVector<base::PointCloud<base::PointD>>& junctions,
-      EigenVector<base::RoadBoundary>* flt_road_boundaries_ptr);
+      const apollo::common::EigenVector<base::RoadBoundary>& road_boundaries,
+      const apollo::common::EigenVector<base::PointCloud<base::PointD>>&
+          junctions,
+      apollo::common::EigenVector<base::RoadBoundary>* flt_road_boundaries_ptr);
 
   void DownsamplePoints(const base::PointDCloudPtr& raw_cloud_ptr,
                         base::PointCloud<base::PointD>* polygon_ptr,
@@ -69,8 +68,10 @@ class HDMapInput {
 
   void SplitBoundary(
       const base::PointCloud<base::PointD>& boundary_line,
-      const EigenVector<base::PointCloud<base::PointD>>& junctions,
-      EigenVector<base::PointCloud<base::PointD>>* boundary_line_vec_ptr);
+      const apollo::common::EigenVector<base::PointCloud<base::PointD>>&
+          junctions,
+      apollo::common::EigenVector<base::PointCloud<base::PointD>>*
+          boundary_line_vec_ptr);
 
   bool GetSignalsFromHDMap(const Eigen::Vector3d& pointd,
                            double forward_distance,

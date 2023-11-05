@@ -22,7 +22,6 @@
 
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
-#include "modules/common/util/eigen_defs.h"
 #include "modules/perception/camera/common/util.h"
 #include "modules/perception/common/io/io_util.h"
 #include "modules/perception/common/sensor_manager/sensor_manager.h"
@@ -30,8 +29,6 @@
 namespace apollo {
 namespace perception {
 namespace camera {
-
-using apollo::common::EigenVector;
 
 bool MultiCamerasProjection::Init(const MultiCamerasInitOption& options) {
   if (options.camera_names.empty()) {
@@ -152,7 +149,7 @@ bool MultiCamerasProjection::BoundaryBasedProject(
     AERROR << "invalid bound_size " << bound_size;
     return false;
   }
-  EigenVector<Eigen::Vector2i> pts2d(bound_size);
+  std::vector<Eigen::Vector2i> pts2d(bound_size);
   auto c2w_pose_inverse = c2w_pose.inverse();
 
   for (int i = 0; i < bound_size; ++i) {

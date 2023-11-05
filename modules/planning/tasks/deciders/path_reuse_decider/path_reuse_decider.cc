@@ -273,9 +273,6 @@ bool PathReuseDecider::IsCollisionFree(
   }
   const DiscretizedPath& history_path =
       history_frame->current_frame_planned_path();
-  if (history_path.empty()) {
-    return false;
-  }
   // path end point
   common::SLPoint path_end_position_sl;
   common::math::Vec2d path_end_position = {history_path.back().x(),
@@ -331,8 +328,9 @@ bool PathReuseDecider::IsCollisionFree(
 
 // check the length of the path
 bool PathReuseDecider::NotShortPath(const DiscretizedPath& current_path) {
-  return current_path.size() >=
-         config_.path_reuse_decider_config().short_path_threshold();
+  // TODO(shu): use gflag
+  static constexpr double kShortPathThreshold = 60;
+  return current_path.size() >= kShortPathThreshold;
 }
 
 bool PathReuseDecider::TrimHistoryPath(

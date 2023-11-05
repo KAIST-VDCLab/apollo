@@ -32,9 +32,6 @@ class CarPose {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  template <typename T, class EigenType>
-  using EigenMap = apollo::common::EigenMap<T, EigenType>;
-
  public:
   CarPose() = default;
   ~CarPose() = default;
@@ -55,7 +52,7 @@ class CarPose {
 
   Eigen::Matrix4d pose_;  // car(novatel) to world pose
   // camera to world poses
-  EigenMap<std::string, Eigen::Matrix4d> c2w_poses_;
+  apollo::common::EigenMap<std::string, Eigen::Matrix4d> c2w_poses_;
   double timestamp_;
 
  private:

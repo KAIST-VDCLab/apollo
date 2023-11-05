@@ -23,24 +23,49 @@ default_task_config: {
   task_type: PIECEWISE_JERK_PATH_OPTIMIZER
   piecewise_jerk_path_optimizer_config {
     default_path_config {
-      l_weight: 1.0
-      dl_weight: 20.0
+      l_weight: 100.0 # 100
+      dl_weight: 300.0
       ddl_weight: 1000.0
       dddl_weight: 50000.0
     }
     lane_change_path_config {
-      l_weight: 1.0
-      dl_weight: 5.0
-      ddl_weight: 800.0
-      dddl_weight: 30000.0
+      l_weight: 1.0 # 1.0 ~9/11, 1.0 9/11
+      dl_weight: 5.0 # 5.0 ~9/11, 5.0 9/11
+      ddl_weight: 500.0 # 1000.0 ~9/11, 500.0 9/11
+      dddl_weight: 35000.0 # 100000 ~9/11, 25000 9/11
     }
+    left_lane_change_path_config {
+      l_weight: 1.0         # 1.0 9/11
+      dl_weight: 5.0        # 5.0 9/11
+      ddl_weight: 500.0     # 500.0 9/11
+      dddl_weight: 50000.0  # 50000 9/11
+    }
+    right_lane_change_path_config {
+      l_weight: 1.0         # 1.0 ~9/11
+      dl_weight: 5.0        # 5.0 ~9/11
+      ddl_weight: 1000.0    # 1000.0 ~9/11
+      dddl_weight: 100000.0 # 100000 ~9/11
+    }
+    low_left_lane_change_path_config {
+      l_weight: 1.0         # 1.0 9/11
+      dl_weight: 5.0        # 5.0 9/11
+      ddl_weight: 50.0     # 500.0 9/11
+      dddl_weight: 500.0  # 25000 9/11
+    }
+    low_right_lane_change_path_config {
+      l_weight: 1.0         # 1.0 ~9/11
+      dl_weight: 5.0        # 5.0 ~9/11
+      ddl_weight: 500.0    # 1000.0 ~9/11
+      dddl_weight: 10000.0 # 100000 ~9/11
+    }
+    path_reference_l_weight: 0.0
   }
 }
 default_task_config: {
   task_type: PIECEWISE_JERK_SPEED_OPTIMIZER
   piecewise_jerk_speed_optimizer_config {
-    acc_weight: 1.0
-    jerk_weight: 3.0
+    acc_weight: 10.0
+    jerk_weight: 30.0
     kappa_penalty_weight: 2000.0
     ref_s_weight: 10.0
     ref_v_weight: 10.0
@@ -142,13 +167,13 @@ default_task_config: {
 default_task_config: {
   task_type: ST_BOUNDS_DECIDER
   st_bounds_decider_config {
-    total_time: 7.0
+    total_time: 8.0
   }
 }
 default_task_config: {
   task_type: SPEED_BOUNDS_PRIORI_DECIDER
   speed_bounds_decider_config {
-    total_time: 7.0
+    total_time: 8.0
     boundary_buffer: 0.25
     max_centric_acceleration_limit: 2.0
     point_extension: 0.0
@@ -160,7 +185,7 @@ default_task_config: {
 default_task_config: {
   task_type: SPEED_BOUNDS_FINAL_DECIDER
   speed_bounds_decider_config {
-    total_time: 7.0
+    total_time: 8.0
     boundary_buffer: 0.1
     max_centric_acceleration_limit: 2.0
     point_extension: 0.0
@@ -366,7 +391,7 @@ default_task_config: {
 default_task_config: {
   task_type: PATH_LANE_BORROW_DECIDER
   path_lane_borrow_decider_config {
-    allow_lane_borrowing: true
+    allow_lane_borrowing: false
   }
 }
 default_task_config: {
@@ -376,7 +401,7 @@ default_task_config: {
     enable_prioritize_change_lane: false
     enable_remove_change_lane: false
     reckless_change_lane: false
-    change_lane_success_freeze_time: 1.5
+    change_lane_success_freeze_time: 5.0
     change_lane_fail_freeze_time: 1.0
   }
 }

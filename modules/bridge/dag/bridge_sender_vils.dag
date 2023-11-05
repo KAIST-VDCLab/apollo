@@ -1,0 +1,14 @@
+module_config {
+    module_library: "/apollo/bazel-bin/modules/bridge/libudp_bridge_sender_component.so"
+    components {
+
+        class_name: "UDPBridgeSenderComponent<vils::VilsKPI>"
+        config {
+            name: "bridge_sender_VilsKPI"
+            config_file_path: "/apollo/modules/bridge/conf/udp_bridge_sender_vils.pb.txt"
+            readers {
+              channel: "/apollo/vils/kpi"
+            }
+      }
+   }
+}

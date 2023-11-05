@@ -26,6 +26,7 @@
 
 #include "cyber/common/log.h"
 #include "cyber/time/clock.h"
+#include "cyber/time/rate.h"
 #include "modules/common/configs/config_gflags.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/linear_interpolation.h"
@@ -43,6 +44,17 @@ using apollo::common::TrajectoryPoint;
 using apollo::common::VehicleStateProvider;
 using Matrix = Eigen::MatrixXd;
 using apollo::cyber::Clock;
+using apollo::cyber::Rate;
+Rate rate(50.0);
+
+double log_curr_vehicle_x=0;
+double log_curr_vehicle_y=0;
+double planning_timestamp = 0.0;
+double LPF_angular_velocity = 0.0;
+
+// KYS: Temp for saving trajectory time
+bool TIME_FLAG = true;
+double time_reference = 0.0;
 
 namespace {
 
@@ -73,15 +85,58 @@ void WriteHeaders(std::ofstream &file_stream) {
               << "steer_angle_heading_rate_contribution,"
               << "steer_angle_feedback,"
               << "steering_position,"
-              << "v" << std::endl;
+              << "curr_vehicle_x,"
+              << "curr_vehicle_y,"
+              << "planning_timestamp,"
+              << "heading_rate,"
+              << "ref_heading_rate,"
+              << "localization_heading,"
+              << "localizaiton_heading_rate_x,"
+              << "localizaiton_heading_rate_y,"
+              << "localizaiton_heading_rate_z," << std::endl;
 }
 }  // namespace
 
+void LatController::ProcessLogs(const SimpleLateralDebug *debug,
+                                const canbus::Chassis *chassis,
+                                const localization::LocalizationEstimate *localization) {
+  const std::string log_str = absl::StrCat(
+      debug->lateral_error(), ",", 
+      debug->ref_heading(), ",", 
+      debug->heading(), ",", 
+      debug->heading_error(), ",", 
+      debug->heading_error_rate(), ",",
+      debug->lateral_error_rate(), ",", 
+      debug->curvature(), ",",
+      debug->steer_angle(), ",", 
+      debug->steer_angle_feedforward(), ",",
+      debug->steer_angle_lateral_contribution(), ",",
+      debug->steer_angle_lateral_rate_contribution(), ",",
+      debug->steer_angle_heading_contribution(), ",",
+      debug->steer_angle_heading_rate_contribution(), ",",
+      debug->steer_angle_feedback(), ",", 
+      chassis->steering_percentage(), ",",
+      log_curr_vehicle_x, ",", 
+      log_curr_vehicle_y, ",",
+      planning_timestamp, ",",
+      debug->heading_rate(), ",",
+      LPF_angular_velocity, ",",
+      localization->pose().heading(), ",",
+      localization->pose().angular_velocity().x(), ",",
+      localization->pose().angular_velocity().y(), ",",
+      localization->pose().angular_velocity().z()
+      );
+  if (1) {
+    steer_log_file_ << log_str << std::endl;
+  }
+  ADEBUG << "Steer_Control_Detail: " << log_str;
+}
+
 LatController::LatController() : name_("LQR-based Lateral Controller") {
-  if (FLAGS_enable_csv_debug) {
+  if (1) {
     steer_log_file_.open(GetLogFileName());
     steer_log_file_ << std::fixed;
-    steer_log_file_ << std::setprecision(6);
+    steer_log_file_ << std::setprecision(10);
     WriteHeaders(steer_log_file_);
   }
   AINFO << "Using " << name_;
@@ -146,25 +201,6 @@ bool LatController::LoadControlConf(const ControlConf *control_conf) {
   return true;
 }
 
-void LatController::ProcessLogs(const SimpleLateralDebug *debug,
-                                const canbus::Chassis *chassis) {
-  const std::string log_str = absl::StrCat(
-      debug->lateral_error(), ",", debug->ref_heading(), ",", debug->heading(),
-      ",", debug->heading_error(), ",", debug->heading_error_rate(), ",",
-      debug->lateral_error_rate(), ",", debug->curvature(), ",",
-      debug->steer_angle(), ",", debug->steer_angle_feedforward(), ",",
-      debug->steer_angle_lateral_contribution(), ",",
-      debug->steer_angle_lateral_rate_contribution(), ",",
-      debug->steer_angle_heading_contribution(), ",",
-      debug->steer_angle_heading_rate_contribution(), ",",
-      debug->steer_angle_feedback(), ",", chassis->steering_percentage(), ",",
-      injector_->vehicle_state()->linear_velocity());
-  if (FLAGS_enable_csv_debug) {
-    steer_log_file_ << log_str << std::endl;
-  }
-  ADEBUG << "Steer_Control_Detail: " << log_str;
-}
-
 void LatController::LogInitParameters() {
   AINFO << name_ << " begin.";
   AINFO << "[LatController parameters]"
@@ -181,10 +217,20 @@ void LatController::InitializeFilters(const ControlConf *control_conf) {
   common::LpfCoefficients(
       ts_, control_conf->lat_controller_conf().cutoff_freq(), &den, &num);
   digital_filter_.set_coefficients(den, num);
-  lateral_error_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(
-      control_conf->lat_controller_conf().mean_filter_window_size()));
-  heading_error_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(
-      control_conf->lat_controller_conf().mean_filter_window_size()));
+  lateral_error_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(5));
+  heading_error_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(5));
+  
+  // KYS: filter ref_heading, theta of target points
+  heading_error_rate_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(5));
+  target_point_theta_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(5));
+  ref_heading_rate_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(5));
+      
+  current_x_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(1));
+  current_y_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(1));
+  current_theta_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(1));
+  current_heading_rate_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(1));
+
+  steer_angle_filter_ = common::MeanFilter(static_cast<std::uint_fast8_t>(1));
 }
 
 Status LatController::Init(std::shared_ptr<DependencyInjector> injector,
@@ -279,7 +325,7 @@ Status LatController::Init(std::shared_ptr<DependencyInjector> injector,
 }
 
 void LatController::CloseLogFile() {
-  if (FLAGS_enable_csv_debug && steer_log_file_.is_open()) {
+  if (1 && steer_log_file_.is_open()) {
     steer_log_file_.close();
   }
 }
@@ -319,7 +365,26 @@ Status LatController::ComputeControlCommand(
     ControlCommand *cmd) {
   auto vehicle_state = injector_->vehicle_state();
 
+  ////////////////////////////////////////
+  // Log CSV for debug
+  // kcity
+  log_curr_vehicle_x = localization->pose().position().x() - 302590;
+  log_curr_vehicle_y = localization->pose().position().y() - 4124220;
+  // munji
+  // log_curr_vehicle_x = localization->pose().position().x() - 356340;
+  // log_curr_vehicle_y = localization->pose().position().y() - 4028710;
+
+  // std::cout << localization->pose().DebugString() << std::endl; 
+
+  if (TIME_FLAG){
+    time_reference = planning_published_trajectory->header().timestamp_sec();
+    TIME_FLAG = false;
+  }
+
   auto target_tracking_trajectory = *planning_published_trajectory;
+  // planning_timestamp = planning_published_trajectory->header().timestamp_sec() - 1692194588;
+  planning_timestamp = planning_published_trajectory->header().timestamp_sec() - time_reference; 
+  ////////////////////////////////////////
 
   if (FLAGS_use_navigation_mode &&
       FLAGS_enable_navigation_mode_position_update) {
@@ -498,6 +563,7 @@ Status LatController::ComputeControlCommand(
                                       M_PI * steer_ratio_ /
                                       steer_single_direction_max_degree_ * 100;
 
+  // KYS: comment out to disable feed forward
   const double steer_angle_feedforward = ComputeFeedForward(debug->curvature());
 
   double steer_angle = 0.0;
@@ -519,8 +585,13 @@ Status LatController::ComputeControlCommand(
       }
     }
   }
+
+  // KYS: comment out to disable ff
   steer_angle = steer_angle_feedback + steer_angle_feedforward +
                 steer_angle_feedback_augment;
+
+  // KYS: uncomment to disable ff
+  // steer_angle = 1.6 * steer_angle_feedback;
 
   // Compute the steering command limit with the given maximum lateral
   // acceleration
@@ -585,6 +656,10 @@ Status LatController::ComputeControlCommand(
   // Clamp the steer angle with steer limitations at current speed
   double steer_angle_limited =
       common::math::Clamp(steer_angle, -steer_limit, steer_limit);
+
+  // KYS: filter to steer output
+  steer_angle_limited = steer_angle_filter_.Update(steer_angle_limited);
+
   steer_angle = steer_angle_limited;
   debug->set_steer_angle_limited(steer_angle_limited);
 
@@ -598,6 +673,7 @@ Status LatController::ComputeControlCommand(
       (vehicle_state->gear() == canbus::Chassis::GEAR_DRIVE ||
        vehicle_state->gear() == canbus::Chassis::GEAR_REVERSE) &&
       chassis->driving_mode() == canbus::Chassis::COMPLETE_AUTO_DRIVE) {
+    std::cout << "steer lock !!!" << std::endl;
     steer_angle = pre_steer_angle_;
   }
 
@@ -606,7 +682,13 @@ Status LatController::ComputeControlCommand(
       steer_angle, pre_steer_angle_ - steer_diff_with_max_rate,
       pre_steer_angle_ + steer_diff_with_max_rate));
   cmd->set_steering_rate(FLAGS_steer_angle_rate);
-
+  // std::cout << "steer_angle: " << steer_angle << std::endl
+  //           << "steer_diff_with_max_rate: " << steer_diff_with_max_rate << std::endl
+  //           << "cmd->steering_target(): " << cmd->steering_target()
+  //           <<"(" << cmd->steering_target()-pre_steer_angle_ << ")" << std::endl
+  //           << "pre_steer_angle: " << pre_steer_angle_ << std::endl
+  //           << "FLAGS_steer_angle_rate: " << cmd->steering_rate() << std::endl
+  //           << "==================================================" << std::endl;
   pre_steer_angle_ = cmd->steering_target();
 
   // compute extra information for logging and debugging
@@ -628,7 +710,7 @@ Status LatController::ComputeControlCommand(
 
   debug->set_heading(driving_orientation_);
   debug->set_steer_angle(steer_angle);
-  debug->set_steer_angle_feedforward(steer_angle_feedforward);
+  debug->set_steer_angle_feedforward(steer_angle_feedforward);  // KYS: disable ff 
   debug->set_steer_angle_lateral_contribution(steer_angle_lateral_contribution);
   debug->set_steer_angle_lateral_rate_contribution(
       steer_angle_lateral_rate_contribution);
@@ -640,7 +722,8 @@ Status LatController::ComputeControlCommand(
   debug->set_steering_position(steering_position);
   debug->set_ref_speed(vehicle_state->linear_velocity());
 
-  ProcessLogs(debug, chassis);
+  ProcessLogs(debug, chassis, localization);
+  rate.Sleep();
   return Status::OK();
 }
 
@@ -654,6 +737,9 @@ Status LatController::Reset() {
 
 void LatController::UpdateState(SimpleLateralDebug *debug) {
   auto vehicle_state = injector_->vehicle_state();
+
+  // LPF_angular_velocity = (0.5 * LPF_angular_velocity) + (0.5 * vehicle_state->angular_velocity());
+  
   if (FLAGS_use_navigation_mode) {
     ComputeLateralErrors(
         0.0, 0.0, driving_orientation_, vehicle_state->linear_velocity(),
@@ -766,10 +852,20 @@ double LatController::ComputeFeedForward(double ref_curvature) const {
 }
 
 void LatController::ComputeLateralErrors(
-    const double x, const double y, const double theta, const double linear_v,
-    const double angular_v, const double linear_a,
+    const double x_, const double y_, const double theta_, const double linear_v,
+    const double angular_v_, const double linear_a,
     const TrajectoryAnalyzer &trajectory_analyzer, SimpleLateralDebug *debug) {
   TrajectoryPoint target_point;
+
+  //KYS: filter x, y, theta
+  const double x = current_x_filter_.Update(x_);
+  const double y = current_y_filter_.Update(y_);
+  const double theta = current_theta_filter_.Update(theta_);
+  const double angular_v = current_heading_rate_filter_.Update(angular_v_);
+  //LPF
+  // LPF_angular_velocity = LPFHeading(angular_v);
+  LPF_angular_velocity = angular_v;
+  
 
   if (FLAGS_query_time_nearest_point_only) {
     target_point = trajectory_analyzer.QueryNearestPointByAbsoluteTime(
@@ -783,6 +879,9 @@ void LatController::ComputeLateralErrors(
       target_point = trajectory_analyzer.QueryNearestPointByPosition(x, y);
     }
   }
+  // std::cout << "[" << std::chrono::system_clock::now() << "] ";
+  std::cout  << "target point: " << target_point.path_point().x() << ", "
+             << target_point.path_point().y() << std::endl;
   const double dx = x - target_point.path_point().x();
   const double dy = y - target_point.path_point().y();
 
@@ -794,20 +893,27 @@ void LatController::ComputeLateralErrors(
   ADEBUG << "x point: " << x << " y point: " << y;
   ADEBUG << "match point information : " << target_point.ShortDebugString();
 
-  const double cos_target_heading = std::cos(target_point.path_point().theta());
-  const double sin_target_heading = std::sin(target_point.path_point().theta());
+  // KYS: instead of directly use target_points, use mean filter
+  // const double cos_target_heading = std::cos(target_point.path_point().theta());
+  // const double sin_target_heading = std::sin(target_point.path_point().theta());
+  const double target_point_theta = target_point_theta_filter_.Update(target_point.path_point().theta());
+  const double cos_target_heading = std::cos(target_point_theta);
+  const double sin_target_heading = std::sin(target_point_theta);
 
   double lateral_error = cos_target_heading * dy - sin_target_heading * dx;
-  if (FLAGS_enable_navigation_mode_error_filter) {
+  if (1) {
     lateral_error = lateral_error_filter_.Update(lateral_error);
   }
 
   debug->set_lateral_error(lateral_error);
 
-  debug->set_ref_heading(target_point.path_point().theta());
+  // KYS: instead of directly use target_points, use mean filter
+  // debug->set_ref_heading(target_point.path_point().theta());
+  debug->set_ref_heading(target_point_theta);
+
   double heading_error =
       common::math::NormalizeAngle(theta - debug->ref_heading());
-  if (FLAGS_enable_navigation_mode_error_filter) {
+  if (1) {
     heading_error = heading_error_filter_.Update(heading_error);
   }
   debug->set_heading_error(heading_error);
@@ -874,14 +980,23 @@ void LatController::ComputeLateralErrors(
   previous_lateral_acceleration_ = debug->lateral_acceleration();
 
   if (injector_->vehicle_state()->gear() == canbus::Chassis::GEAR_REVERSE) {
-    debug->set_heading_rate(-angular_v);
+    debug->set_heading_rate(-LPF_angular_velocity);
   } else {
-    debug->set_heading_rate(angular_v);
+    debug->set_heading_rate(LPF_angular_velocity);
   }
-  debug->set_ref_heading_rate(target_point.path_point().kappa() *
-                              target_point.v());
+  // KYS: Filter ref heading rate
+  // debug->set_ref_heading_rate(target_point.path_point().kappa() *
+  //                             target_point.v());
+  double ref_heading_rate = target_point.path_point().kappa() * target_point.v();
+  ref_heading_rate = ref_heading_rate_filter_.Update(ref_heading_rate);
+  debug->set_ref_heading_rate(ref_heading_rate);
+  
+  // KYS: Filter heading error rate
   debug->set_heading_error_rate(debug->heading_rate() -
                                 debug->ref_heading_rate());
+  // double heading_error_rate = debug->heading_rate() - debug->ref_heading_rate();
+  // heading_error_rate = heading_error_rate_filter_.Update(heading_error_rate);
+  // debug->set_heading_error_rate(heading_error_rate);
 
   debug->set_heading_acceleration(
       (debug->heading_rate() - previous_heading_rate_) / ts_);
@@ -919,7 +1034,14 @@ void LatController::UpdateDrivingOrientation() {
       ADEBUG << "Matrix_b changed due to gear direction";
     }
   }
-}
+  }
+  double LatController::LPFHeading(const double angular_v)
+  {
+      tau = 1 / (300 * 2 * 3.141592);
+      ts = 0.0001;
+      pre_y = ((tau * pre_y) + (ts * angular_v)) / (tau + ts);
+      return pre_y;
+  }
 
 }  // namespace control
 }  // namespace apollo

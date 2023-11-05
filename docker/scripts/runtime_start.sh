@@ -28,7 +28,7 @@ TARGET_ARCH="$(uname -m)"
 VERSION_X86_64="runtime-x86_64-18.04-20220803_1505"
 USER_VERSION_OPT=
 
-FAST_MODE="y"
+FAST_MODE="no"
 
 GEOLOC=
 
@@ -48,6 +48,7 @@ DEFAULT_MAPS=(
 )
 
 DEFAULT_TEST_MAPS=(
+    sunnyvale_big_loop
     sunnyvale_loop
 )
 
@@ -69,7 +70,6 @@ function parse_arguments() {
     local custom_version=""
     local shm_size=""
     local geo=""
-    local fast_mode=""
 
     while [ $# -gt 0 ]; do
         local opt="$1"
@@ -90,9 +90,7 @@ function parse_arguments() {
                 ;;
 
             -f | --fast)
-                fast_mode="$1"
-                shift
-                optarg_check_for_opt "${opt}" "${fast_mode}"
+                FAST_MODE="yes"
                 ;;
 
             -g | --geo)
@@ -126,7 +124,6 @@ function parse_arguments() {
         esac
     done # End while loop
 
-    [[ -n "${fast_mode}" ]] && FAST_MODE="${fast_mode}"
     [[ -n "${geo}" ]] && GEOLOC="${geo}"
     [[ -n "${custom_version}" ]] && USER_VERSION_OPT="${custom_version}"
     [[ -n "${shm_size}" ]] && SHM_SIZE="${shm_size}"
@@ -259,7 +256,7 @@ function mount_map_volumes() {
         done
     fi
 
-    if [ "$FAST_MODE" == "n" ] || [ "$FAST_MODE" == "no" ]; then
+    if [[ "$FAST_MODE" == "no" ]]; then
         for map_name in ${DEFAULT_MAPS[@]}; do
             restart_map_volume_if_needed "${map_name}" "${VOLUME_VERSION}"
         done

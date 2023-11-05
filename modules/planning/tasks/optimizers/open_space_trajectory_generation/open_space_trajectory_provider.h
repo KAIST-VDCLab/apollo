@@ -96,7 +96,6 @@ class OpenSpaceTrajectoryProvider : public TrajectoryOptimizer {
   std::atomic<bool> data_ready_{false};
   std::atomic<bool> trajectory_error_{false};
   std::atomic<bool> trajectory_skipped_{false};
-  bool is_planned_ = false;
   std::mutex open_space_mutex_;
 };
 

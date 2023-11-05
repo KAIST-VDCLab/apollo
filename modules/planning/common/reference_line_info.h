@@ -28,12 +28,11 @@
 #include <utility>
 #include <vector>
 
-#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
+// #include "modules/common/proto/drive_state.pb.h"
+// #include "modules/common/proto/pnc_point.pb.h"
 #include "modules/common_msgs/basic_msgs/drive_state.pb.h"
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
-#include "modules/common_msgs/planning_msgs/planning.pb.h"
-#include "modules/planning/proto/lattice_structure.pb.h"
-
+#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
 #include "modules/map/hdmap/hdmap_common.h"
 #include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/common/path/path_data.h"
@@ -44,6 +43,8 @@
 #include "modules/planning/common/speed/speed_data.h"
 #include "modules/planning/common/st_graph_data.h"
 #include "modules/planning/common/trajectory/discretized_trajectory.h"
+#include "modules/planning/proto/lattice_structure.pb.h"
+#include "modules/common_msgs/planning_msgs/planning.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -157,6 +158,9 @@ class ReferenceLineInfo {
   void SetDrivable(bool drivable);
   bool IsDrivable() const;
 
+  void SetIsApproachingLaneChange(bool is_approaching, double target_lane_end_l);
+  bool IsApproachingLaneChange() const;
+
   void ExportEngageAdvice(common::EngageAdvice* engage_advice,
                           PlanningContext* planning_context) const;
 
@@ -241,6 +245,7 @@ class ReferenceLineInfo {
   std::vector<common::SLPoint> GetAllStopDecisionSLPoint() const;
 
   void SetTurnSignal(const common::VehicleSignal::TurnSignal& turn_signal);
+  void SetTurnSignalLaneChangeApproach(const bool approaching);
   void SetEmergencyLight();
 
   void set_path_reusable(const bool path_reusable) {
@@ -292,6 +297,8 @@ class ReferenceLineInfo {
 
   bool is_drivable_ = true;
 
+  bool is_approaching_lane_change_ = false;
+
   PathDecision path_decision_;
 
   Obstacle* blocking_obstacle_;
@@ -327,6 +334,8 @@ class ReferenceLineInfo {
   double offset_to_other_reference_line_ = 0.0;
 
   double priority_cost_ = 0.0;
+
+  double target_lane_end_l_ = 0.0;
 
   PlanningTarget planning_target_;
 
