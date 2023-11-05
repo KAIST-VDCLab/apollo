@@ -21,6 +21,7 @@ cc_library(
     ]),
 )
 
+<<<<<<< HEAD
 cc_library(
     name = "torch_det",
     srcs = ["torch_det.cc"],
@@ -38,4 +39,6 @@ cc_library(
     ]),
 )
 
+=======
+>>>>>>> upstream/r8.0.0
 cpplint()

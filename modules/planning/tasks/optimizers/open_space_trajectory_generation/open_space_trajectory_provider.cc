@@ -104,34 +104,29 @@ Status OpenSpaceTrajectoryProvider::Process() {
         &OpenSpaceTrajectoryProvider::GenerateTrajectoryThread, this);
     thread_init_flag_ = true;
   }
+  bool need_replan = false;
   // Get stitching trajectory from last frame
   const common::VehicleState vehicle_state = frame_->vehicle_state();
   auto* previous_frame = injector_->frame_history()->Latest();
-  // Use complete raw trajectory from last frame for stitching purpose
   std::vector<TrajectoryPoint> stitching_trajectory;
-  if (!IsVehicleStopDueToFallBack(
+  bool is_stop_due_to_fallback = false;
+  if (previous_frame &&
+      IsVehicleStopDueToFallBack(
           previous_frame->open_space_info().fallback_flag(), vehicle_state)) {
-    const auto& previous_planning =
-        previous_frame->open_space_info().stitched_trajectory_result();
-    const auto& previous_planning_header =
-        previous_frame->current_frame_planned_trajectory()
-            .header()
-            .timestamp_sec();
-    const double planning_cycle_time = FLAGS_open_space_planning_period;
-    PublishableTrajectory last_frame_complete_trajectory(
-        previous_planning_header, previous_planning);
-    std::string replan_reason;
-    const double start_timestamp = Clock::NowInSeconds();
-    stitching_trajectory = TrajectoryStitcher::ComputeStitchingTrajectory(
-        vehicle_state, start_timestamp, planning_cycle_time,
-        FLAGS_open_space_trajectory_stitching_preserved_length, true,
-        &last_frame_complete_trajectory, &replan_reason);
-  } else {
-    AINFO << "Replan due to fallback stop";
+    is_stop_due_to_fallback = true;
+  }
+  if (!is_planned_ || is_stop_due_to_fallback ||
+      !injector_->planning_context()
+           ->mutable_planning_status()
+           ->mutable_open_space()
+           ->position_init()) {
+    AINFO << "need to fallback is_planned" << is_planned_
+          << "is_stop_due_to_fallback" << is_stop_due_to_fallback;
     const double planning_cycle_time =
         1.0 / static_cast<double>(FLAGS_planning_loop_rate);
     stitching_trajectory = TrajectoryStitcher::ComputeReinitStitchingTrajectory(
         planning_cycle_time, vehicle_state);
+    need_replan = true;
     auto* open_space_status = injector_->planning_context()
                                   ->mutable_planning_status()
                                   ->mutable_open_space();
@@ -148,7 +143,7 @@ Status OpenSpaceTrajectoryProvider::Process() {
       return Status(ErrorCode::OK, "Parking finished");
     }
 
-    {
+    if (need_replan) {
       std::lock_guard<std::mutex> lock(open_space_mutex_);
       thread_data_.stitching_trajectory = stitching_trajectory;
       thread_data_.end_pose = open_space_info.open_space_end_pose();
@@ -160,15 +155,12 @@ Status OpenSpaceTrajectoryProvider::Process() {
       thread_data_.obstacles_vertices_vec =
           open_space_info.obstacles_vertices_vec();
       thread_data_.XYbounds = open_space_info.ROI_xy_boundary();
-      if (stitching_trajectory.size() <= 1 || !injector_->planning_context()
-                                                   ->mutable_planning_status()
-                                                   ->mutable_open_space()
-                                                   ->position_init()) {
-        data_ready_.store(true);
-      } else {
-        data_ready_.store(false);
-        AINFO << "SKIP BECAUSE HAS PLAN";
-      }
+      data_ready_.store(true);
+      is_planned_ = true;
+    } else {
+      std::lock_guard<std::mutex> lock(open_space_mutex_);
+      data_ready_.store(false);
+      AINFO << "SKIP BECAUSE HAS PLAN";
     }
 
     // Check vehicle state

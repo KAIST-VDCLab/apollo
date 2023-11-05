@@ -203,6 +203,7 @@ cc_library(
     hdrs = ["impending_collision_edge.h"],
     deps = [
         "//cyber",
+        "//modules/common/util:util_tool",
         "@eigen",
     ],
 )
